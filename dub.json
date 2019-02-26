@@ -1,0 +1,35 @@
+{
+	"description": "DeOs, a toy OS for educational purposes",
+	"license": "",
+	"authors": [
+		"initkfs"
+	],
+	"copyright": "Copyright © 2019, initkfs",
+	"name": "deos",
+	"configurations": [
+		{
+			"name": "deos-main",
+			"buildOptions": [
+			"debugMode", "debugInfo"
+		],
+			"dflags-dmd": [
+			"-vtls", 
+			"-betterC", 
+			"-m64", 
+			"-c",
+			"-boundscheck=off", 
+			"-release"
+			],
+			"targetType": "autodetect",
+			"targetName": "kernel.o",
+			"targetPath": "./build",
+			"sourcePaths": ["./os"],
+			"importPaths": ["./"],
+			"postBuildCommands": [
+			
+			]
+		}
+	], 
+	"dependencies": {
+	}
+}

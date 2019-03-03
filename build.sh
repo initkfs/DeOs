@@ -60,7 +60,7 @@ grubDir=$osImageBootFiles/grub
 		exit 1
 	fi
 
-sourceDir=$scriptDir/os
+sourceDir=$scriptDir/src
 if [[ ! -d $sourceDir ]]; then
 	echo "Error. Not found source directory: $sourceDir">&2
 	exit 1

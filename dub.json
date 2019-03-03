@@ -20,11 +20,11 @@
 			"-boundscheck=off", 
 			"-release"
 			],
-			"targetType": "autodetect",
+			"targetType": "staticLibrary",
 			"targetName": "kernel.o",
 			"targetPath": "./build",
-			"sourcePaths": ["./os"],
-			"importPaths": ["./"],
+			"sourcePaths": ["./src"],
+			"importPaths": ["./src"],
 			"postBuildCommands": [
 			
 			]

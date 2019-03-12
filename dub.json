@@ -26,10 +26,9 @@
 			"sourcePaths": ["./src"],
 			"importPaths": ["./src"],
 			"postBuildCommands": [
-			
 			]
 		}
-	], 
+	],
 	"dependencies": {
 	}
 }

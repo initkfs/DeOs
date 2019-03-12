@@ -33,13 +33,20 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	setIRQs();
 	setIDT();
 
-	auto exitCommand = CliCommand("exit", "Immediate shutdown", &exitNow);
-
-	cliCommands[0] = exitCommand;
+	cliCommands[0] = CliCommand("exit", "Immediate shutdown", &exitNowCommand);
+	cliCommands[1] = CliCommand("clear", "Clear screen", &clearScreenCommand);
 
 	enableCli();
 	kprintln("Shell has started. Enter the command");
 	printCmd();
+}
+
+private void exitNowCommand(immutable(char[]) args){
+	exitNow();
+}
+
+private void clearScreenCommand(immutable(char[]) args){
+	clearScreen();
 }
 
 public extern (C) __gshared void runInterruptServiceRoutine(ulong num, ulong err)

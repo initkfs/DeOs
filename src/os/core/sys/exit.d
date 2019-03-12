@@ -6,7 +6,7 @@ module os.core.sys.exit;
 import os.core.io.ports;
 
 //Bochs and old Qemu versions
-void exitNow(immutable(char[]) args)
+void exitNow()
 {
 	string s = "Shutdown";
 	foreach (char ss; s)

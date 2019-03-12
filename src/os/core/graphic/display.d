@@ -160,7 +160,17 @@ void println(string str, ubyte color = 0b111)
     printChar(CarriageReturn.LF);
 }
 
-void clearScreen(ubyte clearColor = 0b111)
+void clearScreen()
 {
-
+    ubyte color = 0b111;
+    //TODO check display index;
+    int displayMatrix = TextDisplay.DISPLAY_COLUMNS * TextDisplay.DISPLAY_LINES;
+    foreach (index; 0 .. displayMatrix)
+    {
+        TEXT_VIDEO_MEMORY_ADDRESS[index * 2] = ' ';
+        TEXT_VIDEO_MEMORY_ADDRESS[index * 2 + 1] = color;
+    }
+    displayIndexX = 0;
+    displayIndexY = 0;
 }
+

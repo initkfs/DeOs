@@ -90,3 +90,15 @@ void setIRQs()
 
 // 	outb(PIC1_COMMAND,PIC_EOI);
 // }
+
+void enableInterrupts(){
+	asm {
+		sti;
+	}
+}
+
+void disableInterrupts(){
+	asm {
+		sti;
+	}
+}

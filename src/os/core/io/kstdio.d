@@ -18,7 +18,7 @@ void kprint(string str, ubyte color = 0b111)
     printString(str, color);
 }
 
-void kprintln(string str, ubyte color = 0b111)
+void kprintln(string str = "", ubyte color = 0b111)
 {
     printString(str, color);
     printChar(CarriageReturn.LF);
@@ -73,7 +73,7 @@ void kprintf(T)(string format, T[] args, ubyte color = 0b111)
                     {
                         char[20] longValue = longToString(arg, 16);
                         size_t startIndex = indexOfNotZeroChar(longValue);
-                        printString("0x");
+                       // printString("0x");
                         for (auto i = startIndex; i < longValue.length; i++)
                         {
                             char ch = longValue[i];

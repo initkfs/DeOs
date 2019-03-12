@@ -3,11 +3,11 @@
  */
 module os.core.sys.date.stdate;
 
-import os.core.util.conversion_util;
+import os.core.io.kstdio;
+import os.core.io.ports;
+import os.core.io.interrupt.irq;
 
 //https://wiki.osdev.org/CMOS
-
-import os.core.io.ports;
 
 // private string[7] days = [
 //     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
@@ -18,7 +18,7 @@ import os.core.io.ports;
 //     "September", "October", "November", "December"
 // ];
 
-struct DateTimeRawInfo
+private struct DateTimeRawInfo
 {
     ubyte year;
     ubyte month;
@@ -62,3 +62,17 @@ private DateTimeRawInfo readRealTimeClock()
     auto dt = DateTimeRawInfo(year, month, day, hour, minute, second);
     return dt;
 }
+
+void printDateTime(){
+    
+    //disableInterrupts();
+	DateTimeRawInfo dt = readRealTimeClock();
+	//enableInterrupts();
+
+	ubyte[6] dtInfo = [ dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second];
+	
+    kprintln();
+    //TODO format lead zero, full year, etc
+	kprintfln!ubyte("%x-%x-%x %x-%x-%x", dtInfo);
+}
+

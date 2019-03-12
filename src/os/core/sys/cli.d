@@ -8,7 +8,7 @@ private __gshared ubyte[100] shellCommandBuffer = [];
 private __gshared bool isActiveShell = false;
 private __gshared ubyte[100] cliCommandBuffer = [];
 //TODO remove public access
-public __gshared CliCommand[2] cliCommands;
+public __gshared CliCommand[3] cliCommands;
 
 struct CliCommand
 {

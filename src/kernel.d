@@ -11,8 +11,10 @@ import os.core.io.interrupt.isr;
 import os.core.io.interrupt.irq;
 import os.core.io.interrupt.pic;
 import os.core.memory.allocators.linear;
+import os.core.sys.date.stdate;
 import os.core.sys.cli;
 import os.core.sys.exit;
+import os.core.util.conversion_util;
 
 extern (C) __gshared ulong KERNEL_END;
 
@@ -35,18 +37,26 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 
 	cliCommands[0] = CliCommand("exit", "Immediate shutdown", &exitNowCommand);
 	cliCommands[1] = CliCommand("clear", "Clear screen", &clearScreenCommand);
+	cliCommands[2] = CliCommand("date", "Print date in format: year-month-day hour-min-sec", &dateTimeCommand);
 
 	enableCli();
 	kprintln("Shell has started. Enter the command");
 	printCmd();
 }
 
-private void exitNowCommand(immutable(char[]) args){
+private void exitNowCommand(immutable(char[]) args)
+{
 	exitNow();
 }
 
-private void clearScreenCommand(immutable(char[]) args){
+private void clearScreenCommand(immutable(char[]) args)
+{
 	clearScreen();
+}
+
+void dateTimeCommand(immutable(char[]) args)
+{
+	printDateTime();
 }
 
 public extern (C) __gshared void runInterruptServiceRoutine(ulong num, ulong err)
@@ -91,7 +101,8 @@ private void scanCode()
 		return;
 	}
 
-	if(isCliEnabled()){
+	if (isCliEnabled())
+	{
 		applyForCli(k);
 		return;
 	}

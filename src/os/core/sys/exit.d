@@ -8,10 +8,10 @@ import os.core.io.ports;
 //Bochs and old Qemu versions
 void exitNow()
 {
-	string s = "Shutdown";
+	immutable s = "Shutdown";
 	foreach (char ss; s)
 	{
-		ubyte b = cast(ubyte) ss;
+		immutable ubyte b = cast(ubyte) ss;
 		writeToPortByte(0x8900, b);
 	}
 }

@@ -62,8 +62,8 @@ pure @safe char[20] longToString(const long longValue, const int base)
     return "0";
   }
 
-  const int maxDigits = 19;
-  const bool isNeg = (val < 0);
+  immutable maxDigits = 19;
+  immutable bool isNeg = (val < 0);
 
   if (isNeg)
   {
@@ -73,7 +73,7 @@ pure @safe char[20] longToString(const long longValue, const int base)
   int i = maxDigits;
   for (; val && i; --i, val /= base)
   {
-    auto digitBaseRemainder = val % base;
+    immutable digitBaseRemainder = val % base;
     buf[i] = alphabet[digitBaseRemainder];
   }
 

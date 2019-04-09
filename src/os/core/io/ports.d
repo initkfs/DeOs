@@ -3,10 +3,10 @@
  */
 module os.core.io.ports;
 
-void writeToPortByte(ushort port, ubyte data)
+@safe void writeToPortByte(const ushort port, const ubyte data)
 {
 	uint rawValue = data;
-	asm
+	asm @trusted
 	{
 		mov DX, port;
 		mov EAX, rawValue;
@@ -14,10 +14,10 @@ void writeToPortByte(ushort port, ubyte data)
 	}
 }
 
-void writeToPortShort(ushort port, ushort data)
+@safe void writeToPortShort(const ushort port, const ushort data)
 {
 	uint rawValue = data;
-	asm
+	asm @trusted
 	{
 		mov DX, port;
 		mov EAX, rawValue;
@@ -25,10 +25,10 @@ void writeToPortShort(ushort port, ushort data)
 	}
 }
 
-void writeToPortInt(ushort port, uint data)
+@safe void writeToPortInt(const ushort port, const uint data)
 {
 	uint rawValue = data;
-	asm
+	asm @trusted
 	{
 		mov DX, port;
 		mov EAX, rawValue;
@@ -36,35 +36,36 @@ void writeToPortInt(ushort port, uint data)
 	}
 }
 
-T readFromPort(T)(ushort port) if (is(T == ubyte) || is(T == ushort) || is(T == uint))
+@safe T readFromPort(T)(const ushort port)
+		if (is(T == ubyte) || is(T == ushort) || is(T == uint))
 {
 	T resultValue;
 
 	//TODO check port
 	static if (is(T == ubyte))
 	{
-		asm
+		asm @trusted
 		{
 			mov DX, port;
-			 in AL, DX;
+			in AL, DX;
 			mov resultValue, AL;
 		}
 	}
 	else static if (is(T == ushort))
 	{
-		asm
+		asm @trusted
 		{
 			mov DX, port;
-			 in AX, DX;
+			in AX, DX;
 			mov resultValue, AX;
 		}
 	}
 	else static if (is(T == uint))
 	{
-		asm
+		asm @trusted
 		{
 			mov DX, port;
-			 in EAX, DX;
+			in EAX, DX;
 			mov resultValue, EAX;
 		}
 	}

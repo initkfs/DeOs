@@ -26,7 +26,7 @@ align(1):
 	ulong base;
 }
 
-void addGateToIDT(ubyte num, size_t base, ushort selector, ubyte flags)
+void addGateToIDT(const ubyte num, const size_t base, const ushort selector, const ubyte flags)
 {
 	//offset bits 0..15
 	idtEntries[num] = IDT64Entry(cast(ushort)(base & 0xFFFF), selector,

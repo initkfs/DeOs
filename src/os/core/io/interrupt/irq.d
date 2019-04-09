@@ -91,14 +91,14 @@ void setIRQs()
 // 	outb(PIC1_COMMAND,PIC_EOI);
 // }
 
-void enableInterrupts(){
-	asm {
+@safe void enableInterrupts(){
+	asm @trusted {
 		sti;
 	}
 }
 
-void disableInterrupts(){
-	asm {
+@safe void disableInterrupts(){
+	asm @trusted {
 		sti;
 	}
 }

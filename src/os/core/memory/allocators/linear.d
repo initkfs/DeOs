@@ -10,7 +10,7 @@ private __gshared size_t* memoryCursor = null;
 import os.core.util.error_util;
 import os.core.util.assertions_util;
 
-void setMemoryCursorStart(size_t* value)
+void setMemoryCursorStart(const size_t* value)
 {
 
     kassert(value !is null);
@@ -21,10 +21,10 @@ void setMemoryCursorStart(size_t* value)
     }
 
     //TODO check end > start
-    memoryCursorStart = value;
+    memoryCursorStart = cast(size_t*)value;
 }
 
-void setMemoryCursorEnd(size_t* value)
+void setMemoryCursorEnd(const size_t* value)
 {
 
     kassert(value !is null);
@@ -34,7 +34,7 @@ void setMemoryCursorEnd(size_t* value)
         error("Memory end cursor already set");
     }
 
-    memoryCursorEnd = value;
+    memoryCursorEnd = cast(size_t*)value;
 }
 
 size_t getAvailableMemoryBytes()
@@ -51,22 +51,22 @@ private size_t* getMemoryCursor()
     return memoryCursor;
 }
 
-private void setMemoryCursor(size_t* value)
+private void setMemoryCursor(const size_t* value)
 {
-    memoryCursor = value;
+    memoryCursor = cast(ulong*)value;
 }
 
-private void incMemoryCursor(ulong value)
+private void incMemoryCursor(const ulong value)
 {
     memoryCursor += value;
 }
 
-private void decMemoryCursor(ulong value)
+private void decMemoryCursor(const ulong value)
 {
     memoryCursor -= value;
 }
 
-size_t* allocLinear(size_t size)
+size_t* allocLinear(const size_t size)
 {
     kassert(memoryCursorStart !is null);
     kassert(memoryCursorEnd !is null);
@@ -76,7 +76,7 @@ size_t* allocLinear(size_t size)
         setMemoryCursor(memoryCursorStart);
     }
 
-    size_t available = getAvailableMemoryBytes();
+    immutable size_t available = getAvailableMemoryBytes();
     if (available < size)
     {
         error("Unable to allocate memory. Memory overflow");

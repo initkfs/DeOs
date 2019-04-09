@@ -4,12 +4,12 @@
 module os.core.util.string_util;
 
 //TODO template
-size_t indexOfNot(char[] str, char notChar)
+size_t indexOfNot(const char[] str, const char notChar)
 {
     size_t startIndex;
     for (auto i = 0; i < str.length; i++)
     {
-        char ch = str[i];
+        immutable char ch = str[i];
         if (ch != notChar)
         {
             break;
@@ -22,7 +22,7 @@ size_t indexOfNot(char[] str, char notChar)
     return startIndex;
 }
 
-size_t indexOfNotZeroChar(char[] str)
+size_t indexOfNotZeroChar(const char[] str)
 {
     return indexOfNot(str, '0');
 }

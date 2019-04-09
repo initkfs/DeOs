@@ -23,9 +23,9 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	disableCursor();
 	kprintln("DeOs. Version: 0.1a. Author: inikfs");
 
-	size_t* memoryStart = cast(size_t*)&KERNEL_END;
+	immutable size_t* memoryStart = cast(immutable(size_t*))&KERNEL_END;
 	//TODO parse page tables
-	size_t* memoryEnd = cast(size_t*)(0x200 * 0x32 * 0x1000 + memoryStart);
+	immutable size_t* memoryEnd = cast(immutable(size_t*))(0x200 * 0x32 * 0x1000 + memoryStart);
 
 	//Initialize linear allocator
 	setMemoryCursorStart(memoryStart);
@@ -54,12 +54,12 @@ private void clearScreenCommand(immutable(char[]) args)
 	clearScreen();
 }
 
-void dateTimeCommand(immutable(char[]) args)
+private void dateTimeCommand(immutable(char[]) args)
 {
 	printDateTime();
 }
 
-public extern (C) __gshared void runInterruptServiceRoutine(ulong num, ulong err)
+extern (C) __gshared void runInterruptServiceRoutine(const ulong num, const ulong err)
 {
 	switch (num)
 	{
@@ -69,10 +69,10 @@ public extern (C) __gshared void runInterruptServiceRoutine(ulong num, ulong err
 	}
 }
 
-public extern (C) __gshared void runInterruptRequest(ulong num, ulong err)
+extern (C) __gshared void runInterruptRequest(const ulong num, const ulong err)
 {
 	//irqs 0-15 are mapped to interrupt service routines 32-47
-	uint irq = cast(uint) num - 32;
+	immutable uint irq = cast(immutable(uint)) num - 32;
 
 	switch (irq)
 	{
@@ -95,7 +95,7 @@ public extern (C) __gshared void runInterruptRequest(ulong num, ulong err)
 private void scanCode()
 {
 
-	char k = scanKey();
+	immutable char k = scanKey();
 	if (isReleased(k) || k == '\?' || k == 0)
 	{
 		return;

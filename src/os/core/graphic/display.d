@@ -48,7 +48,7 @@ bool isCursorEnabled()
 }
 
 //https://wiki.osdev.org/Text_Mode_Cursor
-void enableCursor(ubyte cursorStart = 0, ubyte cursorEnd = 80)
+void enableCursor(const ubyte cursorStart = 0, const ubyte cursorEnd = 80)
 {
     if (isCursorEnabled)
     {
@@ -57,12 +57,12 @@ void enableCursor(ubyte cursorStart = 0, ubyte cursorEnd = 80)
 
     writeToPortByte(0x3D4, 0x0A);
 
-    ubyte currStart = readFromPort!ubyte(0x3D5);
+    immutable currStart = readFromPort!ubyte(0x3D5);
     writeToPortByte(0x3D5, (currStart & 0xC0) | cursorStart);
 
     writeToPortByte(0x3D4, 0x0B);
 
-    ubyte currEnd = readFromPort!ubyte(0x3D5);
+    immutable currEnd = readFromPort!ubyte(0x3D5);
     writeToPortByte(0x3D5, (currEnd & 0xE0) | cursorEnd);
 
     cursorEnabled = true;
@@ -81,9 +81,9 @@ void disableCursor()
     cursorEnabled = false;
 }
 
-private void updateCursor(uint x, uint y)
+private void updateCursor(const uint x, const uint y)
 {
-    uint pos = displayIndexY * 80 + displayIndexX;
+    immutable uint pos = displayIndexY * 80 + displayIndexX;
 
     writeToPortByte(0x3D4, 0x0F);
     writeToPortByte(0x3D5, (pos & 0xFF));
@@ -99,7 +99,7 @@ private size_t updateCoordinates()
         newLine();
     }
 
-    size_t position = displayIndexY * 160 + displayIndexX * 2;
+    immutable position = displayIndexY * 160 + displayIndexX * 2;
     return position;
 }
 
@@ -109,11 +109,11 @@ void newLine()
     displayIndexX = 0;
 }
 
-private void writeToTextVideoMemory(ubyte value, ubyte color = 0b111)
+private void writeToTextVideoMemory(const ubyte value, const ubyte color = 0b111)
 {
     auto textVideoMemoryAddress = TEXT_VIDEO_MEMORY_ADDRESS;
 
-    size_t position = updateCoordinates();
+    immutable size_t position = updateCoordinates();
 
     ubyte* newAddress = textVideoMemoryAddress + position;
     *newAddress = value;
@@ -129,7 +129,7 @@ void scroll(uint lines = 1)
     //TODO text buffer
 }
 
-void printChar(char val, ubyte color = 0b111)
+void printChar(const char val, const ubyte color = 0b111)
 {
     //TODO use ascii module
     if (val == CarriageReturn.LF || val == CarriageReturn.CR)
@@ -146,7 +146,7 @@ void printChar(char val, ubyte color = 0b111)
     writeToTextVideoMemory(val, color);
 }
 
-void printString(string str, ubyte color = CGAColors.COLOR_WHITE)
+void printString(const string str, const ubyte color = CGAColors.COLOR_WHITE)
 {
     foreach (char c; str)
     {
@@ -154,7 +154,7 @@ void printString(string str, ubyte color = CGAColors.COLOR_WHITE)
     }
 }
 
-void println(string str, ubyte color = 0b111)
+void println(const string str, const ubyte color = 0b111)
 {
     printString(str, color);
     printChar(CarriageReturn.LF);
@@ -162,9 +162,9 @@ void println(string str, ubyte color = 0b111)
 
 void clearScreen()
 {
-    ubyte color = 0b111;
+    immutable color = 0b111;
     //TODO check display index;
-    int displayMatrix = TextDisplay.DISPLAY_COLUMNS * TextDisplay.DISPLAY_LINES;
+    immutable displayMatrix = TextDisplay.DISPLAY_COLUMNS * TextDisplay.DISPLAY_LINES;
     foreach (index; 0 .. displayMatrix)
     {
         TEXT_VIDEO_MEMORY_ADDRESS[index * 2] = ' ';
@@ -173,4 +173,3 @@ void clearScreen()
     displayIndexX = 0;
     displayIndexY = 0;
 }
-

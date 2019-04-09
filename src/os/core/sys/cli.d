@@ -95,7 +95,7 @@ void applyForCli(char k)
         enableCursor();
         for (int i = 0; i < cliCommandBuffer.length; i++)
         {
-            ubyte c = cliCommandBuffer[i];
+            immutable ubyte c = cliCommandBuffer[i];
             if (c == 0u)
             {
                 cliCommandBuffer[i] = k;
@@ -116,7 +116,7 @@ private void parseAndRunCommand(ubyte[] command, ubyte[] args)
     outer: foreach (size_t index, ref CliCommand cmd; cliCommands)
     {
 
-        string cliCommandName = cmd.name;
+        immutable cliCommandName = cmd.name;
 
         if (cliCommandName.length != command.length)
         {

@@ -68,19 +68,19 @@ private enum SCANCODES
 private __gshared bool isShiftPress = false;
 private __gshared bool isCapsLockPress = false;
 
-public bool isReleased(char code)
+pure @safe bool isReleased(const char code)
 {
 	return (code & 128) == 128;
 }
 
-public bool isPressed(char code)
+pure @safe bool isPressed(const char code)
 {
 	return !isReleased(code);
 }
 
-public __gshared char scanKey()
+__gshared char scanKey()
 {
-	ubyte scanCode = readFromPort!(ubyte)(0x60);
+	immutable ubyte scanCode = readFromPort!(ubyte)(0x60);
 
 	if (scanCode & 0x80)
 	{
@@ -90,8 +90,8 @@ public __gshared char scanKey()
 	if (isReleased(scanCode))
 	{
 
-		scanCode = cast(ubyte)(scanCode - 128);
-		switch (scanCode)
+		immutable ubyte releasedCode = cast(ubyte)(scanCode - 128);
+		switch (releasedCode)
 		{
 		case SCANCODES.CAPSLOCK:
 			isCapsLockPress = isCapsLockPress ? false : true;
@@ -121,7 +121,7 @@ public __gshared char scanKey()
 		}
 	}
 
-	int charIndex = ((isShiftPress || isCapsLockPress) ? (scanCode * 2) + 1 : (scanCode * 2));
-	char resultChar = scanCodeTable[charIndex];
+	immutable int charIndex = ((isShiftPress || isCapsLockPress) ? (scanCode * 2) + 1 : (scanCode * 2));
+	immutable char resultChar = scanCodeTable[charIndex];
 	return resultChar;
 }

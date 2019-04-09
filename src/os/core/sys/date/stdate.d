@@ -27,7 +27,7 @@ private struct DateTimeRawInfo
     ubyte minute;
     ubyte second;
 
-    this(ubyte year, ubyte month, ubyte day, ubyte hour, ubyte minute, ubyte second)
+    this(const ubyte year, const ubyte month, const ubyte day, const ubyte hour, const ubyte minute, const ubyte second)
     {
         //TODO validate
         this.year = year;
@@ -42,24 +42,24 @@ private struct DateTimeRawInfo
 private __gshared ubyte cmos_address = 0x70;
 private __gshared ubyte cmos_data = 0x71;
 
-private ubyte readFromRTCRegister(ubyte reg)
+private ubyte readFromRTCRegister(const ubyte reg)
 {
     writeToPortByte(cmos_address, reg);
-    const ubyte rtcValue = readFromPort!ubyte(cmos_data);
+    immutable ubyte rtcValue = readFromPort!ubyte(cmos_data);
     return rtcValue;
 }
 
 private DateTimeRawInfo readRealTimeClock()
 {
-    const ubyte year = readFromRTCRegister(0x09);
-    const ubyte month = readFromRTCRegister(0x08);
-    const ubyte day = readFromRTCRegister(0x07);
+    immutable ubyte year = readFromRTCRegister(0x09);
+    immutable ubyte month = readFromRTCRegister(0x08);
+    immutable ubyte day = readFromRTCRegister(0x07);
 
-    const ubyte hour = readFromRTCRegister(0x04);
-    const ubyte minute = readFromRTCRegister(0x02);
-    const ubyte second = readFromRTCRegister(0x00);
+    immutable ubyte hour = readFromRTCRegister(0x04);
+    immutable ubyte minute = readFromRTCRegister(0x02);
+    immutable ubyte second = readFromRTCRegister(0x00);
 
-    auto dt = DateTimeRawInfo(year, month, day, hour, minute, second);
+    immutable dt = DateTimeRawInfo(year, month, day, hour, minute, second);
     return dt;
 }
 

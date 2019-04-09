@@ -13,18 +13,18 @@ struct CarriageReturn
     enum CR = '\r';
 }
 
-void kprint(string str, ubyte color = 0b111)
+void kprint(const string str, const ubyte color = 0b111)
 {
     printString(str, color);
 }
 
-void kprintln(string str = "", ubyte color = 0b111)
+void kprintln(const string str = "", const ubyte color = 0b111)
 {
     printString(str, color);
     printChar(CarriageReturn.LF);
 }
 
-void kprintf(T)(string format, T[] args, ubyte color = 0b111)
+void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
 {
     //TODO add stack
     bool formatFound;
@@ -53,7 +53,7 @@ void kprintf(T)(string format, T[] args, ubyte color = 0b111)
                         size_t startIndex = indexOfNotZeroChar(intValue);
                         for (auto i = startIndex; i < intValue.length; i++)
                         {
-                            char ch = intValue[i];
+                            immutable char ch = intValue[i];
                             printChar(ch);
                         }
                     }
@@ -76,7 +76,7 @@ void kprintf(T)(string format, T[] args, ubyte color = 0b111)
                        // printString("0x");
                         for (auto i = startIndex; i < longValue.length; i++)
                         {
-                            char ch = longValue[i];
+                            immutable char ch = longValue[i];
                             printChar(ch);
                         }
                     }
@@ -99,7 +99,7 @@ void kprintf(T)(string format, T[] args, ubyte color = 0b111)
     }
 }
 
-void kprintfln(T)(string format, T[] args, ubyte color = 0b111)
+void kprintfln(T)(const string format, const T[] args, const ubyte color = 0b111)
 {
     kprintf!T(format, args, color);
     printChar(CarriageReturn.LF);

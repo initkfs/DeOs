@@ -1,12 +1,12 @@
 ;authors: initkfs
 
-global lower_half_start
+global lowerHalfStart
 
 extern kmain		; kernel.d
 
 section .text
 bits 64
-lower_half_start:
+lowerHalfStart:
 	mov rax, QWORD kmain ;call kernel
 	call rax
 .hang:

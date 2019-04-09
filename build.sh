@@ -72,6 +72,13 @@ if [[ ! -d $sourceAsmDir ]]; then
 	exit 1
 fi
 
+pushd .
+cd "$sourceAsmDir"
+if [[ $? -ne 0 ]]; then
+	echo "Error. Cannot set current directory for asm files: $sourceAsmDir">&2
+	exit 1
+fi
+
 asmSources=$(find "$sourceAsmDir" -type f -name "*.asm")
 while read -r asmSourceFile;
 do
@@ -86,6 +93,8 @@ fi
 done <<EOF
 $asmSources
 EOF
+
+popd
 
 #dmd -betterC -map -vtls -m64 -i=app.core.main_controller  -boundscheck=off -release -c $sourceDir/kernel.d -of=$buildDir/kernel.o
 #-boundscheck=off

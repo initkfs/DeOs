@@ -1,22 +1,22 @@
 ;authors: initkfs
 
-global stack_pointer
-
-extern lower_half_start
+extern lowerHalfStart
 
 ;Multiboot2 specification: https://www.gnu.org/software/grub/manual/multiboot2/multiboot.html#kernel_002ec
-section .multiboot_header
-header_start:
+section .multibootHeader
+headerStart:
     dd 0xE85250D6                ; magic
     dd 0                         ; architecture, protected mode x32
-    dd header_end - header_start ; header length
-    dd 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start)) ;checksum
+    dd headerEnd - headerStart ; header length
+    dd 0x100000000 - (0xe85250d6 + 0 + (headerEnd - headerStart)) ;checksum
     dw 0    ; type
     dw 0    ; flags
     dd 8    ; size
-header_end:
+headerEnd:
 
+section .data
 STACKSIZE equ 0x10000 ; 64kb
+bootStartMessage: db "Start bootloader", 0
 
 section .text
 bootstrap:
@@ -26,11 +26,15 @@ extern kmain
 
 bits 32 
 start:
-mov esp, stack_pointer
+
+mov ebx, bootStartMessage
+call printString
+
+mov esp, stackPointer
 mov edi, eax 		; multiboot2 argument - magic constant
 mov esi, ebx 		; multiboot2 argument - multiboot header struct address
-  
-call enable_paging
+
+call enablePaging
 
 lgdt [gdt64.pointer]
 
@@ -39,11 +43,37 @@ mov ss, ax
 mov ds, ax
 mov es, ax
 
-jmp gdt64.code:lower_half_start
+jmp gdt64.code:lowerHalfStart
 
-enable_paging:
+;%include "libs/screen.inc"
+printString:
+   push edx
+   push eax
+
+   mov edx, 0xb8000 ; set video memory address
+
+.printLoop:
+    mov al, [ebx] ; set character
+    mov ah, 0x0F ; white on black attribute
+
+    cmp al, 0
+    je .exit
+
+    mov [edx], ax ; write character + attribute in video memory
+    
+    add ebx, 1 ; next char
+    add edx, 2 ; next video memory position
+
+    jmp .printLoop
+
+.exit:
+   pop eax
+   pop edx
+   ret
+
+enablePaging:
 	;set page level 4
-	mov eax, p4_table
+	mov eax, p4Table
 	mov cr3, eax
 
 	; enable PAE, set CR4.PAE, bit 5 = 1
@@ -62,6 +92,7 @@ enable_paging:
 	mov eax, cr0
 	or eax, 1 << 31
 	mov cr0, eax
+.exit:
 	ret
 
 ; section .rodata
@@ -77,7 +108,7 @@ gdt64:
 
 stack:
 	times STACKSIZE db 0
-stack_pointer:
+stackPointer:
 
 ; TODO recursive paging
 ; https://habr.com/ru/post/436606
@@ -86,26 +117,26 @@ stack_pointer:
 ; https://wiki.osdev.org/D_Bare_Bones
 ; https://wiki.osdev.org/D_barebone_with_ldc2
 align 4096
-p4_table:					
-	dq (p3_table + 0x3)		;present | writable
+p4Table:					
+	dq (p3Table + 0x3)		;present | writable
 	times 255 dq 0			 
-	dq (p3_table + 0x3)		;present | writable
+	dq (p3Table + 0x3)		;present | writable
 	times 254 dq 0
-	dq (p4_table + 0x3)		; recursive entry.
+	dq (p4Table + 0x3)		; recursive entry.
 align 4096
-p3_table:
-	dq (p2_table + 0x3)
+p3Table:
+	dq (p2Table + 0x3)
 	times 511 dq 0
 align 4096
-p2_table:
+p2Table:
 	%assign i 0
 	%rep 50 ; TODO remapping from code. 50 tables yet.
-	dq (p1_table + i + 0x3)
+	dq (p1Table + i + 0x3)
 	%assign i i+4096
 	%endrep
 	times (512-50) dq 0
 align 4096
-p1_table:
+p1Table:
 	%assign i 0				
 	%rep 512*50
 	dq (i << 12) | 0x03

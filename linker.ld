@@ -7,7 +7,7 @@ SECTIONS
    . = 1M;
    .boot :
     { 
-      *(.multiboot_header)
+      *(.multibootHeader)
     }
    .text : { *(.text .text.*) }
    .rodata : { *(.rodata .rodata.*) }

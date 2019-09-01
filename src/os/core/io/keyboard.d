@@ -1,10 +1,12 @@
 /**
  * Authors: initkfs
  */
+//https://wiki.osdev.org/PS/2_Keyboard
 module os.core.io.keyboard;
 
 import os.core.io.kstdio;
 import os.core.io.ports;
+import os.core.util.conversion_util;
 
 private __gshared char[178] scanCodeTable = [
 	'\?', '\?', //0 unused
@@ -58,11 +60,12 @@ private __gshared char[178] scanCodeTable = [
 	'\?', '\?' //F12
 ];
 
-private enum SCANCODES
+public enum SCANCODES
 {
 	CAPSLOCK = 0x3a,
 	LSHIFT = 0x2a,
-	RSHIFT = 0x36
+	RSHIFT = 0x36,
+	ESC = 0x01
 }
 
 private __gshared bool isShiftPress = false;
@@ -78,7 +81,7 @@ pure @safe bool isPressed(const char code)
 	return !isReleased(code);
 }
 
-__gshared char scanKey()
+ubyte scanKeyCode()
 {
 	immutable ubyte scanCode = readFromPort!(ubyte)(0x60);
 
@@ -104,6 +107,8 @@ __gshared char scanKey()
 			break;
 		default:
 		}
+
+		return 0;
 	}
 	else
 	{
@@ -121,7 +126,25 @@ __gshared char scanKey()
 		}
 	}
 
-	immutable int charIndex = ((isShiftPress || isCapsLockPress) ? (scanCode * 2) + 1 : (scanCode * 2));
-	immutable char resultChar = scanCodeTable[charIndex];
+	return scanCode;
+}
+
+char getKeyByCode(immutable(ubyte) scanCode)
+{
+	if(scanCode == 0){
+		auto releaseKeyChar = '?';
+		return releaseKeyChar;
+	}
+
+	immutable int charIndex = ((isShiftPress || isCapsLockPress) ? (scanCode * 2) + 1
+			: (scanCode * 2));
+	immutable(char) resultChar = scanCodeTable[charIndex];
+	return resultChar;
+}
+
+char scanKey()
+{
+	immutable(ubyte) scanCode = scanKeyCode();
+	immutable(char) resultChar = getKeyByCode(scanCode);
 	return resultChar;
 }

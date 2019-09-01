@@ -28,6 +28,12 @@ pure @safe void itoa(int n, char[] s)
   reverse(s);
 }
 
+pure @safe public int charToInt(char character)
+{
+  int intChar = character - '0';
+  return intChar;
+}
+
 pure @safe private void reverse(char[] s)
 {
   size_t i;

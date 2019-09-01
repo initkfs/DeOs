@@ -14,9 +14,9 @@ struct CliCommand
 {
     string name;
     string desctiption;
-    void function(immutable(char[]) args) action;
+    void function(immutable(CliCommand) cmd, immutable(char[]) args) action;
 
-    this(string name, string desctiption, void function(immutable(char[]) args) action)
+    this(string name, string desctiption, void function(immutable(CliCommand), immutable(char[]) args) action)
     {
         this.name = name;
         this.desctiption = desctiption;
@@ -84,7 +84,9 @@ void applyForCli(char k)
             cliCommandBuffer[i] = 0u;
         }
 
-        printCmd();
+        if(isCliEnabled){
+            printCmd();
+        }
     }
     else if (k == '\t' && isActiveShell)
     {
@@ -134,7 +136,7 @@ private void parseAndRunCommand(ubyte[] command, ubyte[] args)
         }
 
         auto onAction = cmd.action;
-        onAction(argsArray);
+        onAction(cmd, argsArray);
         return;
     }
 

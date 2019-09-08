@@ -15,14 +15,8 @@ import os.core.sys.date.stdate;
 import os.core.sys.cli;
 import os.core.sys.exit;
 import os.core.util.conversion_util;
-import os.core.workers.kworker;
 
 extern (C) __gshared ulong KERNEL_END;
-
-private __gshared KWorker*[1] workers;
-private __gshared currentWorkerIndex = 0;
-private __gshared size_t currentTick = 0;
-private __gshared int tickCount = 10;
 
 extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 {
@@ -49,31 +43,6 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	printCmd();
 }
 
-private void updateWorkers()
-{
-	currentTick = 1;
-	while (currentTick % tickCount != 0)
-	{
-		immutable workerCount = workers.length;
-		if (currentWorkerIndex >= workerCount)
-		{
-			currentWorkerIndex = 0;
-		}
-
-		KWorker* worker = workers[currentWorkerIndex];
-		if (worker !is null)
-		{
-			worker.run();
-			if (workerCount > 0)
-			{
-				currentWorkerIndex++;
-			}
-		}
-
-		currentTick++;
-	}
-}
-
 private void exitNowCommand(immutable(CliCommand) cmd, immutable(char[]) args)
 {
 	exitNow();
@@ -87,21 +56,6 @@ private void clearScreenCommand(immutable(CliCommand) cmd, immutable(char[]) arg
 private void dateTimeCommand(immutable(CliCommand) cmd, immutable(char[]) args)
 {
 	printDateTime();
-}
-
-private void changeContext()
-{
-	disableCursor();
-	disableCli();
-	clearScreen();
-}
-
-private void onExitCommand()
-{
-	disableCursor();
-	clearScreen();
-	enableCursor();
-	enableCli();
 }
 
 extern (C) __gshared void runInterruptServiceRoutine(const ulong num, const ulong err)
@@ -134,8 +88,6 @@ extern (C) __gshared void runInterruptRequest(const ulong num, const ulong err)
 		sendEndPIC2();
 	}
 	sendEndPIC1();
-
-	updateWorkers();
 }
 
 private void scanCode()
@@ -147,25 +99,8 @@ private void scanCode()
 		return;
 	}
 
-	// if (currentContext !is null)
-	// {
-	// 	SimpleContext* context = getCurrentContext();
-
-	// 	if (keyCode == SCANCODES.ESC)
-	// 	{ //ESC
-	// 		context.exit();
-	// 		resetContext();
-	// 		onExitCommand();
-	// 		return;
-	// 	}
-
-	// 	context.input(keyCode, k);
-	// }
-	// else
-	// {
 	if (isCliEnabled())
 	{
 		applyForCli(k);
 	}
-	// }
 }

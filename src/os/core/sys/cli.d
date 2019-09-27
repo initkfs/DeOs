@@ -3,10 +3,13 @@ module os.core.sys.cli;
 import os.core.graphic.display;
 import os.core.io.kstdio;
 
-private __gshared ubyte[100] shellCommandBuffer = [];
+private
+{
+    __gshared ubyte[100] shellCommandBuffer = [];
+    __gshared bool isActiveShell = false;
+    __gshared ubyte[100] cliCommandBuffer = [];
+}
 
-private __gshared bool isActiveShell = false;
-private __gshared ubyte[100] cliCommandBuffer = [];
 //TODO remove public access
 public __gshared CliCommand[3] cliCommands;
 
@@ -16,7 +19,8 @@ struct CliCommand
     string desctiption;
     void function(immutable(CliCommand) cmd, immutable(char[]) args) action;
 
-    this(string name, string desctiption, void function(immutable(CliCommand), immutable(char[]) args) action)
+    this(string name, string desctiption, void function(immutable(CliCommand),
+            immutable(char[]) args) action)
     {
         this.name = name;
         this.desctiption = desctiption;
@@ -34,7 +38,8 @@ void disableCli()
     isActiveShell = false;
 }
 
-bool isCliEnabled(){
+bool isCliEnabled()
+{
     return isActiveShell;
 }
 
@@ -84,7 +89,8 @@ void applyForCli(char k)
             cliCommandBuffer[i] = 0u;
         }
 
-        if(isCliEnabled){
+        if (isCliEnabled)
+        {
             printCmd();
         }
     }

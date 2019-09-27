@@ -4,7 +4,7 @@
 module os.core.text.ascii;
 
 //TODO ascii table implementation
-pure @safe bool isEnter(const char code)
+bool isEnter(const char code) @safe pure
 {
 	return code == '\n';
 }

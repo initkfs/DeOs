@@ -7,12 +7,13 @@ import os.core.io.kstdio;
 import os.core.io.ports;
 import os.core.util.conversion_util;
 
-private __gshared ubyte* TEXT_VIDEO_MEMORY_ADDRESS = cast(ubyte*) 0xB8000;
-
-private __gshared int displayIndexX = 0;
-private __gshared int displayIndexY = 0;
-
-private __gshared bool cursorEnabled = false;
+private
+{
+    __gshared ubyte* TEXT_VIDEO_MEMORY_ADDRESS = cast(ubyte*) 0xB8000;
+    __gshared int displayIndexX = 0;
+    __gshared int displayIndexY = 0;
+    __gshared bool cursorEnabled = false;
+}
 
 __gshared struct TextDisplay
 {

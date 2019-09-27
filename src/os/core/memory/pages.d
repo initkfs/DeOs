@@ -3,7 +3,7 @@
  */
 module os.core.memory.pages;
 
-pure @safe size_t getPageLevel4PhysAddr()
+size_t getPageLevel4PhysAddr() @safe pure
 {
 	size_t retVal;
 	asm pure @trusted

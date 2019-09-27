@@ -9,7 +9,7 @@ module os.core.util.conversion_util;
 // * https://stackoverflow.com/questions/190229/where-is-the-itoa-function-in-linux
 // * https://ru.wikipedia.org/wiki/Itoa_(Си)
 // */
-pure @safe void itoa(int n, char[] s)
+void itoa(int n, char[] s) @safe pure
 {
   int i;
   int sign;
@@ -28,13 +28,13 @@ pure @safe void itoa(int n, char[] s)
   reverse(s);
 }
 
-pure @safe public int charToInt(char character)
+public int charToInt(char character) @safe pure
 {
   int intChar = character - '0';
   return intChar;
 }
 
-pure @safe private void reverse(char[] s)
+private void reverse(char[] s) @safe pure
 {
   size_t i;
   size_t j;
@@ -51,7 +51,7 @@ pure @safe private void reverse(char[] s)
 /*
 * https://stackoverflow.com/questions/18858115/c-long-long-to-char-conversion-function-in-embedded-system
 */
-pure @safe char[20] longToString(const long longValue, const int base)
+char[20] longToString(const long longValue, const int base) @safe pure
 {
   char[20] buf = "00000000000000000000";
   immutable char[16] alphabet = "0123456789ABCDEF";

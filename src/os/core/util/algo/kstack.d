@@ -7,8 +7,11 @@ import os.core.util.error_util;
 
 struct KStackSmall
 {
-    private int stackPointer = -1;
-    private int[100] storage;
+    private
+    {
+        int stackPointer = -1;
+        int[100] storage;
+    }
 
     void push(int value)
     {
@@ -29,9 +32,10 @@ struct KStackSmall
         return storage[stackPointer];
     }
 
-  int pop()
+    int pop()
     {
-        if (isEmpty()){
+        if (isEmpty())
+        {
             error("Stack is empty");
         }
         int value = peek();

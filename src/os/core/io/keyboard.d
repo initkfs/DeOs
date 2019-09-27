@@ -68,15 +68,18 @@ public enum SCANCODES
 	ESC = 0x01
 }
 
-private __gshared bool isShiftPress = false;
-private __gshared bool isCapsLockPress = false;
+private
+{
+	__gshared bool isShiftPress = false;
+	__gshared bool isCapsLockPress = false;
+}
 
-pure @safe bool isReleased(const char code)
+bool isReleased(const char code) @safe pure
 {
 	return (code & 128) == 128;
 }
 
-pure @safe bool isPressed(const char code)
+bool isPressed(const char code) @safe pure
 {
 	return !isReleased(code);
 }
@@ -131,7 +134,8 @@ ubyte scanKeyCode()
 
 char getKeyByCode(immutable(ubyte) scanCode)
 {
-	if(scanCode == 0){
+	if (scanCode == 0)
+	{
 		auto releaseKeyChar = '?';
 		return releaseKeyChar;
 	}

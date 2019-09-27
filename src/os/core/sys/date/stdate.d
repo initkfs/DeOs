@@ -27,7 +27,8 @@ private struct DateTimeRawInfo
     ubyte minute;
     ubyte second;
 
-    this(const ubyte year, const ubyte month, const ubyte day, const ubyte hour, const ubyte minute, const ubyte second)
+    this(const ubyte year, const ubyte month, const ubyte day, const ubyte hour,
+            const ubyte minute, const ubyte second)
     {
         //TODO validate
         this.year = year;
@@ -39,8 +40,11 @@ private struct DateTimeRawInfo
     }
 }
 
-private __gshared ubyte cmos_address = 0x70;
-private __gshared ubyte cmos_data = 0x71;
+private
+{
+    __gshared ubyte cmos_address = 0x70;
+    __gshared ubyte cmos_data = 0x71;
+}
 
 private ubyte readFromRTCRegister(const ubyte reg)
 {
@@ -63,16 +67,16 @@ private DateTimeRawInfo readRealTimeClock()
     return dt;
 }
 
-void printDateTime(){
-    
-    //disableInterrupts();
-	DateTimeRawInfo dt = readRealTimeClock();
-	//enableInterrupts();
+void printDateTime()
+{
 
-	ubyte[6] dtInfo = [ dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second];
-	
+    //disableInterrupts();
+    DateTimeRawInfo dt = readRealTimeClock();
+    //enableInterrupts();
+
+    ubyte[6] dtInfo = [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second];
+
     kprintln();
     //TODO format lead zero, full year, etc
-	kprintfln!ubyte("%x-%x-%x %x-%x-%x", dtInfo);
+    kprintfln!ubyte("%x-%x-%x %x-%x-%x", dtInfo);
 }
-

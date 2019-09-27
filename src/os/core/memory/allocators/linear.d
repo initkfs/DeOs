@@ -3,9 +3,12 @@
  */
 module os.core.memory.allocators.linear;
 
-private __gshared size_t* memoryCursorStart = null;
-private __gshared size_t* memoryCursorEnd = null;
-private __gshared size_t* memoryCursor = null;
+private
+{
+    __gshared size_t* memoryCursorStart = null;
+    __gshared size_t* memoryCursorEnd = null;
+    __gshared size_t* memoryCursor = null;
+}
 
 import os.core.util.error_util;
 import os.core.util.assertions_util;
@@ -21,7 +24,7 @@ void setMemoryCursorStart(const size_t* value)
     }
 
     //TODO check end > start
-    memoryCursorStart = cast(size_t*)value;
+    memoryCursorStart = cast(size_t*) value;
 }
 
 void setMemoryCursorEnd(const size_t* value)
@@ -34,7 +37,7 @@ void setMemoryCursorEnd(const size_t* value)
         error("Memory end cursor already set");
     }
 
-    memoryCursorEnd = cast(size_t*)value;
+    memoryCursorEnd = cast(size_t*) value;
 }
 
 size_t getAvailableMemoryBytes()
@@ -53,7 +56,7 @@ private size_t* getMemoryCursor()
 
 private void setMemoryCursor(const size_t* value)
 {
-    memoryCursor = cast(ulong*)value;
+    memoryCursor = cast(ulong*) value;
 }
 
 private void incMemoryCursor(const ulong value)

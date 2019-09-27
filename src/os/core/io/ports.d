@@ -3,7 +3,7 @@
  */
 module os.core.io.ports;
 
-@safe void writeToPortByte(const ushort port, const ubyte data)
+void writeToPortByte(const ushort port, const ubyte data) @safe
 {
 	uint rawValue = data;
 	asm @trusted
@@ -14,7 +14,7 @@ module os.core.io.ports;
 	}
 }
 
-@safe void writeToPortShort(const ushort port, const ushort data)
+void writeToPortShort(const ushort port, const ushort data) @safe
 {
 	uint rawValue = data;
 	asm @trusted
@@ -25,7 +25,7 @@ module os.core.io.ports;
 	}
 }
 
-@safe void writeToPortInt(const ushort port, const uint data)
+void writeToPortInt(const ushort port, const uint data) @safe
 {
 	uint rawValue = data;
 	asm @trusted
@@ -36,7 +36,7 @@ module os.core.io.ports;
 	}
 }
 
-@safe T readFromPort(T)(const ushort port)
+T readFromPort(T)(const ushort port) @safe
 		if (is(T == ubyte) || is(T == ushort) || is(T == uint))
 {
 	T resultValue;

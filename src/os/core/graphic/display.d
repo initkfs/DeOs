@@ -97,7 +97,7 @@ private size_t updateCoordinates()
     //position = (y_position * characters_per_line) + x_position;
     if (displayIndexX > TextDisplay.DISPLAY_COLUMNS)
     {
-        newLine();
+        newLine;
     }
 
     immutable position = displayIndexY * 160 + displayIndexX * 2;
@@ -114,7 +114,7 @@ private void writeToTextVideoMemory(const ubyte value, const ubyte color = 0b111
 {
     auto textVideoMemoryAddress = TEXT_VIDEO_MEMORY_ADDRESS;
 
-    immutable size_t position = updateCoordinates();
+    immutable size_t position = updateCoordinates;
 
     ubyte* newAddress = textVideoMemoryAddress + position;
     *newAddress = value;
@@ -135,13 +135,13 @@ void printChar(const char val, const ubyte color = 0b111)
     //TODO use ascii module
     if (val == CarriageReturn.LF || val == CarriageReturn.CR)
     {
-        newLine();
+        newLine;
         return;
     }
 
     if (displayIndexY >= TextDisplay.DISPLAY_LINES)
     {
-        scroll();
+        scroll;
     }
 
     writeToTextVideoMemory(val, color);
@@ -155,7 +155,7 @@ void printString(const string str, const ubyte color = CGAColors.COLOR_WHITE)
     }
 }
 
-void println(const string str, const ubyte color = 0b111)
+void println(const string str = "", const ubyte color = 0b111)
 {
     printString(str, color);
     printChar(CarriageReturn.LF);

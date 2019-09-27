@@ -25,7 +25,7 @@ struct KStackSmall
 
     int peek()
     {
-        if (isEmpty())
+        if (isEmpty)
         {
             error("Stack is empty");
         }
@@ -34,11 +34,11 @@ struct KStackSmall
 
     int pop()
     {
-        if (isEmpty())
+        if (isEmpty)
         {
             error("Stack is empty");
         }
-        int value = peek();
+        int value = peek;
         stackPointer--;
         return value;
     }

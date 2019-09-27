@@ -49,13 +49,15 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
                     //TODO long?
                     static if (is(typeof(arg) : int))
                     {
-                        char[20] intValue = longToString(arg, 10);
-                        size_t startIndex = indexOfNotZeroChar(intValue);
-                        for (auto i = startIndex; i < intValue.length; i++)
-                        {
-                            immutable char ch = intValue[i];
-                            printChar(ch);
-                        }
+                       printNumericValue(arg);
+                    }
+                    continue;
+                }
+            case 'l':
+                {
+                    static if (is(typeof(arg) : long))
+                    {
+                       printNumericValue(arg);
                     }
                     continue;
                 }
@@ -73,7 +75,7 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
                     {
                         char[20] longValue = longToString(arg, 16);
                         size_t startIndex = indexOfNotZeroChar(longValue);
-                       // printString("0x");
+                        // printString("0x");
                         for (auto i = startIndex; i < longValue.length; i++)
                         {
                             immutable char ch = longValue[i];
@@ -96,6 +98,17 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
         }
 
         printChar(formatArg, color);
+    }
+}
+
+private void printNumericValue(const(long) value)
+{
+    const char[20] longValue = longToString(value, 10);
+    size_t startIndex = indexOfNotZeroChar(longValue);
+    for (auto i = startIndex; i < longValue.length; i++)
+    {
+        immutable char ch = longValue[i];
+        printChar(ch);
     }
 }
 

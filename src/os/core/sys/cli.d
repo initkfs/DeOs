@@ -11,7 +11,7 @@ private
 }
 
 //TODO remove public access
-public __gshared CliCommand[3] cliCommands;
+public __gshared CliCommand[4] cliCommands;
 
 struct CliCommand
 {
@@ -45,14 +45,14 @@ bool isCliEnabled()
 
 void printCmd()
 {
-    enableCursor();
+    enableCursor;
     kprint("$>");
 }
 
 private void printHelp()
 {
-    disableCursor();
-    kprintln("");
+    disableCursor;
+    kprintln;
     kprintln("Available commands:");
     foreach (int index, CliCommand cmd; cliCommands)
     {
@@ -60,7 +60,7 @@ private void printHelp()
         kprintfln!string("%s - %s", cmdInfo);
     }
 
-    printCmd();
+    printCmd;
 }
 
 void applyForCli(char k)
@@ -78,7 +78,7 @@ void applyForCli(char k)
                     return;
                 }
 
-                disableCursor();
+                disableCursor;
                 parseAndRunCommand(cliCommandBuffer[0 .. i], cliCommandBuffer[i .. $]);
                 break;
             }
@@ -91,16 +91,16 @@ void applyForCli(char k)
 
         if (isCliEnabled)
         {
-            printCmd();
+            printCmd;
         }
     }
     else if (k == '\t' && isActiveShell)
     {
-        printHelp();
+        printHelp;
     }
     else if (isActiveShell)
     {
-        enableCursor();
+        enableCursor;
         for (int i = 0; i < cliCommandBuffer.length; i++)
         {
             immutable ubyte c = cliCommandBuffer[i];
@@ -146,7 +146,7 @@ private void parseAndRunCommand(ubyte[] command, ubyte[] args)
         return;
     }
 
-    kprintln("");
+    kprintln;
     string[1] invalidCommand = [commandStr];
     kprintfln!string("Not found command: %s", invalidCommand);
 }

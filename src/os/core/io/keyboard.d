@@ -148,7 +148,7 @@ char getKeyByCode(immutable(ubyte) scanCode)
 
 char scanKey()
 {
-	immutable(ubyte) scanCode = scanKeyCode();
+	immutable(ubyte) scanCode = scanKeyCode;
 	immutable(char) resultChar = getKeyByCode(scanCode);
 	return resultChar;
 }

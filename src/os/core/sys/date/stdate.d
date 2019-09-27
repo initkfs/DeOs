@@ -70,13 +70,13 @@ private DateTimeRawInfo readRealTimeClock()
 void printDateTime()
 {
 
-    //disableInterrupts();
-    DateTimeRawInfo dt = readRealTimeClock();
-    //enableInterrupts();
+    //disableInterrupts;
+    DateTimeRawInfo dt = readRealTimeClock;
+    //enableInterrupts;
 
     ubyte[6] dtInfo = [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second];
 
-    kprintln();
+    kprintln;
     //TODO format lead zero, full year, etc
     kprintfln!ubyte("%x-%x-%x %x-%x-%x", dtInfo);
 }

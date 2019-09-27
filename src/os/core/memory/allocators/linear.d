@@ -3,17 +3,17 @@
  */
 module os.core.memory.allocators.linear;
 
-private
-{
-    __gshared size_t* memoryCursorStart = null;
-    __gshared size_t* memoryCursorEnd = null;
-    __gshared size_t* memoryCursor = null;
-}
-
 import os.core.util.error_util;
 import os.core.util.assertions_util;
 
-void setMemoryCursorStart(const size_t* value)
+private
+{
+    __gshared ubyte* memoryCursorStart;
+    __gshared ubyte* memoryCursorEnd;
+    __gshared ubyte* memoryCursor;
+}
+
+void setMemoryCursorStart(immutable(ubyte*) value)
 {
 
     kassert(value !is null);
@@ -24,10 +24,16 @@ void setMemoryCursorStart(const size_t* value)
     }
 
     //TODO check end > start
-    memoryCursorStart = cast(size_t*) value;
+    memoryCursorStart = cast(ubyte*) value;
 }
 
-void setMemoryCursorEnd(const size_t* value)
+immutable(ubyte*) getMemoryStart()
+{
+    immutable(ubyte*) startAddress = cast(immutable(ubyte*)) memoryCursorStart;
+    return startAddress;
+}
+
+void setMemoryCursorEnd(immutable(ubyte*) value)
 {
 
     kassert(value !is null);
@@ -37,7 +43,7 @@ void setMemoryCursorEnd(const size_t* value)
         error("Memory end cursor already set");
     }
 
-    memoryCursorEnd = cast(size_t*) value;
+    memoryCursorEnd = cast(ubyte*) value;
 }
 
 size_t getAvailableMemoryBytes()
@@ -49,14 +55,18 @@ size_t getAvailableMemoryBytes()
     return memoryCursorEnd - memoryCursorStart;
 }
 
-private size_t* getMemoryCursor()
+immutable(ubyte*) getCurrentMemoryPosition(){
+    return cast(immutable(ubyte*)) getMemoryCursor;
+}
+
+private ubyte* getMemoryCursor()
 {
     return memoryCursor;
 }
 
-private void setMemoryCursor(const size_t* value)
+private void setMemoryCursor(const ubyte* value)
 {
-    memoryCursor = cast(ulong*) value;
+    memoryCursor = cast(ubyte*) value;
 }
 
 private void incMemoryCursor(const ulong value)
@@ -69,7 +79,17 @@ private void decMemoryCursor(const ulong value)
     memoryCursor -= value;
 }
 
-size_t* allocLinear(const size_t size)
+ubyte* allocLinearDword()
+{
+    return allocLinear(4);
+}
+
+ubyte* allocLinearQword()
+{
+    return allocLinear(8);
+}
+
+ubyte* allocLinear(const size_t size)
 {
     kassert(memoryCursorStart !is null);
     kassert(memoryCursorEnd !is null);
@@ -85,9 +105,11 @@ size_t* allocLinear(const size_t size)
         error("Unable to allocate memory. Memory overflow");
     }
 
+    ubyte* startBlockAddress = getMemoryCursor;
+
     //TODO align
     incMemoryCursor(size);
-    return getMemoryCursor();
+    return startBlockAddress;
 }
 
 void resetLinearCursor()

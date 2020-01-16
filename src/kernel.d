@@ -15,8 +15,12 @@ import os.core.sys.date.stdate;
 import os.core.sys.cli;
 import os.core.sys.exit;
 import os.core.util.conversion_util;
+import os.core.sys.game.simple_game;
 
 extern (C) __gshared ulong KERNEL_END;
+
+//TODO extract and switch context. Delegates don't work from another module
+private __gshared bool isGame = false;
 
 extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 {
@@ -39,9 +43,14 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	cliCommands[2] = CliCommand("date",
 			"Print date in format: year-month-day hour-min-sec", &dateTimeCommand);
 	cliCommands[3] = CliCommand("mem", "Print memory information", &memDebugCommand);
+	cliCommands[4] = CliCommand("game", "Run simple game", &runSimpleGameCommand);
+	
+	//TODO remove cursor
 	enableCli;
 	kprintln("Shell has started. Enter the command");
 	printCmd;
+
+	runSimpleGame;
 }
 
 private void exitNowCommand(immutable(CliCommand) cmd, immutable(char[]) args)
@@ -67,13 +76,29 @@ private void memDebugCommand(immutable(CliCommand) cmd, immutable(char[]) args)
 	if (getCurrentMemoryPosition !is null)
 	{
 		string memCurrentFormat = "Memory current address: 0x%x";
-		const long[1] memCurrentAddrValues = [cast(long) getCurrentMemoryPosition];
+		const long[1] memCurrentAddrValues = [
+			cast(long) getCurrentMemoryPosition
+		];
 		kprintfln(memCurrentFormat, memCurrentAddrValues);
 
 		const long memUsedValue = getCurrentMemoryPosition - getMemoryStart;
 		const long[1] memUsedValues = [memUsedValue];
 		kprintfln(memUsedFormat, memUsedValues);
 	}
+}
+
+private void runSimpleGameCommand(immutable(CliCommand) cmd, immutable(char[]) args)
+{
+	runSimpleGame;
+}
+
+private void runSimpleGame()
+{
+	disableCursor;
+	disableCli;
+	clearScreen;
+	gameRun;
+	isGame = true;
 }
 
 private void dateTimeCommand(immutable(CliCommand) cmd, immutable(char[]) args)
@@ -99,6 +124,11 @@ extern (C) __gshared void runInterruptRequest(const ulong num, const ulong err)
 	{
 	case IRQs.TIMER:
 
+		//TODO move
+		if (isGame)
+		{
+			gameUpdate;
+		}
 		break;
 	case IRQs.KEYBOARD:
 		scanCode;
@@ -119,6 +149,21 @@ private void scanCode()
 	immutable char k = getKeyByCode(keyCode);
 	if (isReleased(k) || k == 0 || keyCode == 0) // k == '\?' 
 	{
+		return;
+	}
+
+	if (isGame)
+	{
+		//TODO move to context
+		gameUpdate(k);
+		if (k == 'q' || k == 'Q')
+		{
+			gameStop;
+			isGame = false;
+			clearScreen;
+			enableCli;
+			printCmd;
+		}
 		return;
 	}
 

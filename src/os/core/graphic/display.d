@@ -82,7 +82,7 @@ void disableCursor()
     cursorEnabled = false;
 }
 
-private void updateCursor(const uint x, const uint y)
+private void updateCursor()
 {
     immutable uint pos = displayIndexY * 80 + displayIndexX;
 
@@ -110,6 +110,11 @@ void newLine()
     displayIndexX = 0;
 }
 
+void skipColumn(){
+    displayIndexX++;
+    updateCoordinates;
+}
+
 private void writeToTextVideoMemory(const ubyte value, const ubyte color = 0b111)
 {
     auto textVideoMemoryAddress = TEXT_VIDEO_MEMORY_ADDRESS;
@@ -122,7 +127,7 @@ private void writeToTextVideoMemory(const ubyte value, const ubyte color = 0b111
     newAddress++;
     *newAddress = color;
     displayIndexX++;
-    updateCursor(0, 2);
+    updateCursor;
 }
 
 void scroll(uint lines = 1)

@@ -11,7 +11,7 @@ private
 }
 
 //TODO remove public access
-public __gshared CliCommand[4] cliCommands;
+public __gshared CliCommand[5] cliCommands;
 
 struct CliCommand
 {

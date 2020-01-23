@@ -2,6 +2,7 @@ module os.core.sys.game.simple_game;
 
 import os.core.graphic.display;
 import os.core.io.kstdio;
+import os.core.memory.allocators.linear;
 
 private __gshared bool isRunning = false;
 private __gshared enum playerStartXPosition = 40;
@@ -10,25 +11,55 @@ private __gshared enum playerStartYPosition = 10;
 private __gshared size_t playerXPosition = playerStartXPosition;
 private __gshared size_t playerYPosition = playerStartYPosition;
 
-private __gshared Enemy[1] enemies;
+private __gshared Enemy[8] enemies;
 
 private __gshared size_t currentTick = 0;
 
 private struct Enemy
 {
-    __gshared size_t enemyXPosition = 0;
-    __gshared size_t enemyYPosition = 0;
+    private size_t* enemyXPosition;
+    private size_t* enemyYPosition;
 
-    this(size_t startX, size_t startY)
+    this(size_t* startX, size_t* startY)
     {
         enemyXPosition = startX;
         enemyYPosition = startY;
+    }
+
+    size_t enemyX()
+    {
+        return *enemyXPosition;
+    }
+
+    size_t enemyY()
+    {
+        return *enemyYPosition;
+    }
+
+    void setEnemyX(size_t x)
+    {
+        *enemyXPosition = x;
+    }
+
+    void setEnemyY(size_t x)
+    {
+        *enemyYPosition = x;
     }
 }
 
 void gameRun()
 {
-    enemies[0] = Enemy(45, 0);
+    size_t startEnemyX = 5;
+    for (int i = 0; i < enemies.length; i++)
+    {
+        size_t* enemyXPtr = allocLinearQword;
+        size_t* enemyYPtr = allocLinearQword;
+        *enemyXPtr = startEnemyX;
+        *enemyYPtr = 0;
+        enemies[i] = Enemy(enemyXPtr, enemyYPtr);
+        startEnemyX += 10;
+    }
+
     isRunning = true;
 }
 
@@ -47,8 +78,8 @@ private bool isEnemyAndPlayerTogether()
 {
     foreach (Enemy enemy; enemies)
     {
-        size_t enemyX = enemy.enemyXPosition;
-        size_t enemyY = enemy.enemyYPosition;
+        size_t enemyX = enemy.enemyX;
+        size_t enemyY = enemy.enemyY;
         bool isKill = playerXPosition == enemyX && playerYPosition == enemyY;
         if (isKill)
         {
@@ -66,10 +97,7 @@ void gameUpdate(char keyboardKey = '?')
         if (keyboardKey == 'c' || keyboardKey == 'C')
         {
             isRunning = true;
-            if (isEnemyAndPlayerTogether())
-            {
-                setPlayerInStartPosition;
-            }
+            setPlayerInStartPosition;
         }
         else
         {
@@ -107,19 +135,28 @@ void gameUpdate(char keyboardKey = '?')
 
     foreach (Enemy enemy; enemies)
     {
-        enemy.enemyYPosition++;
-        if (enemy.enemyYPosition > lines - 1)
+        size_t* enemyYPosPtr = enemy.enemyYPosition;
+        size_t enemyY = *enemyYPosPtr;
+        enemyY++;
+        *enemy.enemyYPosition = enemyY;
+        if (enemyY > lines - 1)
         {
-            enemy.enemyYPosition = 0;
+            *enemy.enemyYPosition = 0;
         }
 
-        enemy.enemyXPosition = clamp!size_t(enemy.enemyXPosition, 0, columns - 1);
-        enemy.enemyYPosition = clamp!size_t(enemy.enemyYPosition, 0, lines - 1);
+        *enemy.enemyXPosition = clamp!size_t(*enemy.enemyXPosition, 0, columns - 1);
+        *enemy.enemyYPosition = clamp!size_t(*enemy.enemyYPosition, 0, lines - 1);
+    }
+
+    if (playerXPosition == 0 || playerXPosition == TextDisplay.DISPLAY_COLUMNS - 1)
+    {
+        gameEnd;
+        return;
     }
 
     if (isEnemyAndPlayerTogether)
     {
-        gameEnd;
+        gameOver;
         return;
     }
 
@@ -129,7 +166,10 @@ void gameUpdate(char keyboardKey = '?')
         {
             foreach (Enemy enemy; enemies)
             {
-                if (currentColumn == enemy.enemyXPosition && currentLine == enemy.enemyYPosition)
+                // size_t x = enemy.enemyY;
+                // long[1] xx = [cast(long) x];
+                // kprintfln("%l", xx);
+                if (currentColumn == enemy.enemyX && currentLine == enemy.enemyY)
                 {
                     kprint("|");
                     continue eachColumn;
@@ -153,7 +193,14 @@ void gameUpdate(char keyboardKey = '?')
 private void gameEnd()
 {
     clearScreen;
-    kprintln("Game end");
+    kprintln("Congratulations! You won the game!");
+    gameStop;
+}
+
+private void gameOver()
+{
+    clearScreen;
+    kprintln("Game over");
     gameStop;
 }
 

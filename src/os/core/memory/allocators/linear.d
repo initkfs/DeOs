@@ -84,9 +84,11 @@ ubyte* allocLinearDword()
     return allocLinear(4);
 }
 
-ubyte* allocLinearQword()
+ulong* allocLinearQword()
 {
-    return allocLinear(8);
+    const ubyte* allocCursor = allocLinear(8);
+    ulong* resultCursor = cast(ulong*) allocCursor;
+    return resultCursor;
 }
 
 ubyte* allocLinear(const size_t size)

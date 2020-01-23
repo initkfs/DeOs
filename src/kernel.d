@@ -49,6 +49,8 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	enableCli;
 	kprintln("Shell has started. Enter the command");
 	printCmd;
+
+	runSimpleGame;
 }
 
 private void exitNowCommand(immutable(CliCommand) cmd, immutable(char[]) args)

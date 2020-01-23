@@ -1,5 +1,8 @@
 ;authors: initkfs
 
+%include "lib/screen.asm"
+%include "lib/util.asm"
+
 extern lowerHalfStart
 
 ;Multiboot2 specification: https://www.gnu.org/software/grub/manual/multiboot2/multiboot.html#kernel_002ec
@@ -28,7 +31,8 @@ bits 32
 start:
 
 mov ebx, bootStartMessage
-call printString
+call cursorDisable
+call printMessage
 
 mov esp, stackPointer
 mov edi, eax 		; multiboot2 argument - magic constant
@@ -44,32 +48,6 @@ mov ds, ax
 mov es, ax
 
 jmp gdt64.code:lowerHalfStart
-
-;%include "libs/screen.inc"
-printString:
-   push edx
-   push eax
-
-   mov edx, 0xb8000 ; set video memory address
-
-.printLoop:
-    mov al, [ebx] ; set character
-    mov ah, 0x0F ; white on black attribute
-
-    cmp al, 0
-    je .exit
-
-    mov [edx], ax ; write character + attribute in video memory
-    
-    add ebx, 1 ; next char
-    add edx, 2 ; next video memory position
-
-    jmp .printLoop
-
-.exit:
-   pop eax
-   pop edx
-   ret
 
 enablePaging:
 	;set page level 4

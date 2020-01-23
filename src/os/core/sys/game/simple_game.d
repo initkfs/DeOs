@@ -8,40 +8,38 @@ private __gshared bool isRunning = false;
 private __gshared enum playerStartXPosition = 40;
 private __gshared enum playerStartYPosition = 10;
 
-private __gshared size_t playerXPosition = playerStartXPosition;
-private __gshared size_t playerYPosition = playerStartYPosition;
+private __gshared long playerXPosition = playerStartXPosition;
+private __gshared long playerYPosition = playerStartYPosition;
 
 private __gshared Enemy[8] enemies;
 
-private __gshared size_t currentTick = 0;
-
 private struct Enemy
 {
-    private size_t* enemyXPosition;
-    private size_t* enemyYPosition;
+    private ulong* enemyXPosition;
+    private ulong* enemyYPosition;
 
-    this(size_t* startX, size_t* startY)
+    this(ulong* startX, ulong* startY)
     {
         enemyXPosition = startX;
         enemyYPosition = startY;
     }
 
-    size_t enemyX()
+    long enemyX()
     {
         return *enemyXPosition;
     }
 
-    size_t enemyY()
+    long enemyY()
     {
         return *enemyYPosition;
     }
 
-    void setEnemyX(size_t x)
+    void setEnemyX(long x)
     {
         *enemyXPosition = x;
     }
 
-    void setEnemyY(size_t x)
+    void setEnemyY(long x)
     {
         *enemyYPosition = x;
     }
@@ -49,11 +47,11 @@ private struct Enemy
 
 void gameRun()
 {
-    size_t startEnemyX = 5;
+    long startEnemyX = 5;
     for (int i = 0; i < enemies.length; i++)
     {
-        size_t* enemyXPtr = allocLinearQword;
-        size_t* enemyYPtr = allocLinearQword;
+        ulong* enemyXPtr = allocLinearQword;
+        ulong* enemyYPtr = allocLinearQword;
         *enemyXPtr = startEnemyX;
         *enemyYPtr = 0;
         enemies[i] = Enemy(enemyXPtr, enemyYPtr);
@@ -78,8 +76,8 @@ private bool isEnemyAndPlayerTogether()
 {
     foreach (Enemy enemy; enemies)
     {
-        size_t enemyX = enemy.enemyX;
-        size_t enemyY = enemy.enemyY;
+        long enemyX = enemy.enemyX;
+        long enemyY = enemy.enemyY;
         bool isKill = playerXPosition == enemyX && playerYPosition == enemyY;
         if (isKill)
         {
@@ -105,8 +103,6 @@ void gameUpdate(char keyboardKey = '?')
         }
     }
 
-    currentTick++;
-
     clearScreen;
 
     if (keyboardKey == 'D' || keyboardKey == 'd')
@@ -127,16 +123,16 @@ void gameUpdate(char keyboardKey = '?')
     }
 
     //TODO scene matrix [][]
-    size_t columns = TextDisplay.DISPLAY_COLUMNS;
-    size_t lines = TextDisplay.DISPLAY_LINES;
+    long columns = TextDisplay.DISPLAY_COLUMNS;
+    long lines = TextDisplay.DISPLAY_LINES;
 
-    playerXPosition = clamp!size_t(playerXPosition, 0, columns - 1);
-    playerYPosition = clamp!size_t(playerYPosition, 0, 20 - 1);
+    playerXPosition = clamp!long(playerXPosition, 0, columns - 1);
+    playerYPosition = clamp!long(playerYPosition, 0, 20 - 1);
 
     foreach (Enemy enemy; enemies)
     {
-        size_t* enemyYPosPtr = enemy.enemyYPosition;
-        size_t enemyY = *enemyYPosPtr;
+        ulong* enemyYPosPtr = enemy.enemyYPosition;
+        long enemyY = *enemyYPosPtr;
         enemyY++;
         *enemy.enemyYPosition = enemyY;
         if (enemyY > lines - 1)
@@ -144,8 +140,8 @@ void gameUpdate(char keyboardKey = '?')
             *enemy.enemyYPosition = 0;
         }
 
-        *enemy.enemyXPosition = clamp!size_t(*enemy.enemyXPosition, 0, columns - 1);
-        *enemy.enemyYPosition = clamp!size_t(*enemy.enemyYPosition, 0, lines - 1);
+        *enemy.enemyXPosition = clamp!long(*enemy.enemyXPosition, 0, columns - 1);
+        *enemy.enemyYPosition = clamp!long(*enemy.enemyYPosition, 0, lines - 1);
     }
 
     if (playerXPosition == 0 || playerXPosition == TextDisplay.DISPLAY_COLUMNS - 1)
@@ -160,15 +156,12 @@ void gameUpdate(char keyboardKey = '?')
         return;
     }
 
-    foreach (size_t currentLine; 0 .. lines)
+    foreach (long currentLine; 0 .. lines)
     {
-        eachColumn: foreach (size_t currentColumn; 0 .. columns)
+        eachColumn: foreach (long currentColumn; 0 .. columns)
         {
             foreach (Enemy enemy; enemies)
             {
-                // size_t x = enemy.enemyY;
-                // long[1] xx = [cast(long) x];
-                // kprintfln("%l", xx);
                 if (currentColumn == enemy.enemyX && currentLine == enemy.enemyY)
                 {
                     kprint("|");

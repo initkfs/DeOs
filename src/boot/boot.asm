@@ -1,7 +1,7 @@
 ;authors: initkfs
 
-%include "lib/screen.asm"
-%include "lib/util.asm"
+%include "lib/screen.inc"
+%include "lib/util.inc"
 
 extern lowerHalfStart
 

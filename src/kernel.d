@@ -44,13 +44,12 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 			"Print date in format: year-month-day hour-min-sec", &dateTimeCommand);
 	cliCommands[3] = CliCommand("mem", "Print memory information", &memDebugCommand);
 	cliCommands[4] = CliCommand("game", "Run simple game", &runSimpleGameCommand);
-	
+	cliCommands[5] = CliCommand("info", "Print hardware information", &infoCommand);
+
 	//TODO remove cursor
 	enableCli;
 	kprintln("Shell has started. Enter the command");
 	printCmd;
-
-	runSimpleGame;
 }
 
 private void exitNowCommand(immutable(CliCommand) cmd, immutable(char[]) args)
@@ -104,6 +103,20 @@ private void runSimpleGame()
 private void dateTimeCommand(immutable(CliCommand) cmd, immutable(char[]) args)
 {
 	printDateTime;
+}
+
+private void infoCommand(immutable(CliCommand) cmd, immutable(char[]) args)
+{
+	import os.core.io.cpuid;
+
+	const char[12] vendorInfo;
+	readCpuidVendor(cast(uint*) vendorInfo.ptr);
+	
+	const string[1] vendorInfoParts = [cast(string) vendorInfo];
+
+	kprintln;
+	kprintf("Vendor: %s", vendorInfoParts);
+	kprintln;
 }
 
 extern (C) __gshared void runInterruptServiceRoutine(const ulong num, const ulong err)

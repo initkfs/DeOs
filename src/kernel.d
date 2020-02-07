@@ -17,7 +17,15 @@ import os.core.sys.exit;
 import os.core.util.conversion_util;
 import os.core.sys.game.simple_game;
 
+private
+{
+	alias UptimeTimer = os.core.timer.uptime_timer;
+	alias PauseTimer = os.core.timer.pause_timer;
+}
+
 extern (C) __gshared ulong KERNEL_END;
+
+private __gshared string osLogoData = import("os_logo.txt");
 
 //TODO extract and switch context. Delegates don't work from another module
 private __gshared bool isGame = false;
@@ -45,6 +53,12 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	cliCommands[3] = CliCommand("mem", "Print memory information", &memDebugCommand);
 	cliCommands[4] = CliCommand("game", "Run simple game", &runSimpleGameCommand);
 	cliCommands[5] = CliCommand("info", "Print hardware information", &infoCommand);
+
+	kprintln(osLogoData, CGAColors.COLOR_LIGHT_GREEN);
+
+	PauseTimer.pauseInTicks(5);
+
+	clearScreen;
 
 	//TODO remove cursor
 	enableCli;
@@ -111,7 +125,7 @@ private void infoCommand(immutable(CliCommand) cmd, immutable(char[]) args)
 
 	const char[12] vendorInfo;
 	readCpuidVendor(cast(uint*) vendorInfo.ptr);
-	
+
 	const string[1] vendorInfoParts = [cast(string) vendorInfo];
 
 	kprintln;
@@ -136,6 +150,8 @@ extern (C) __gshared void runInterruptRequest(const ulong num, const ulong err)
 	switch (irq)
 	{
 	case IRQs.TIMER:
+
+		UptimeTimer.updateTimer();
 
 		//TODO move
 		if (isGame)

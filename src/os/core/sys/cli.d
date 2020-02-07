@@ -1,3 +1,6 @@
+/**
+ * Authors: initkfs
+ */
 module os.core.sys.cli;
 
 import os.core.graphic.display;

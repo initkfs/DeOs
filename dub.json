@@ -18,7 +18,8 @@
 			"-m64", 
 			"-c",
 			"-boundscheck=off", 
-			"-release"
+			"-release",
+			"-J=./data"
 			],
 			"targetType": "staticLibrary",
 			"targetName": "kernel.o",

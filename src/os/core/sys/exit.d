@@ -3,7 +3,9 @@
  */
 module os.core.sys.exit;
 
-import os.core.io.ports;
+private {
+	alias Ports = os.core.io.ports;
+}
 
 //Bochs and old Qemu versions
 void exitNow()
@@ -12,6 +14,6 @@ void exitNow()
 	foreach (char ss; s)
 	{
 		immutable ubyte b = cast(ubyte) ss;
-		writeToPortByte(0x8900, b);
+		Ports.writeToPortByte(0x8900, b);
 	}
 }

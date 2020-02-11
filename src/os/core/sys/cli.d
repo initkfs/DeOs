@@ -3,8 +3,10 @@
  */
 module os.core.sys.cli;
 
-import os.core.graphic.display;
-import os.core.io.kstdio;
+private {
+    alias Display = os.core.graphic.display;
+    alias Kstdio = os.core.io.kstdio;
+}
 
 private
 {
@@ -48,19 +50,19 @@ bool isCliEnabled()
 
 void printCmd()
 {
-    enableCursor;
-    kprint("$>");
+    Display.enableCursor;
+    Kstdio.kprint("$>");
 }
 
 private void printHelp()
 {
-    disableCursor;
-    kprintln;
-    kprintln("Available commands:");
+    Display.disableCursor;
+    Kstdio.kprintln;
+    Kstdio.kprintln("Available commands:");
     foreach (int index, CliCommand cmd; cliCommands)
     {
         string[2] cmdInfo = [cmd.name, cmd.desctiption];
-        kprintfln!string("%s - %s", cmdInfo);
+        Kstdio.kprintfln!string("%s - %s", cmdInfo);
     }
 
     printCmd;
@@ -81,7 +83,7 @@ void applyForCli(char k)
                     return;
                 }
 
-                disableCursor;
+                Display.disableCursor;
                 parseAndRunCommand(cliCommandBuffer[0 .. i], cliCommandBuffer[i .. $]);
                 break;
             }
@@ -103,7 +105,7 @@ void applyForCli(char k)
     }
     else if (isActiveShell)
     {
-        enableCursor;
+        Display.enableCursor;
         for (int i = 0; i < cliCommandBuffer.length; i++)
         {
             immutable ubyte c = cliCommandBuffer[i];
@@ -114,7 +116,7 @@ void applyForCli(char k)
             }
         }
         char[1] charStr = [k];
-        kprint(cast(string) charStr);
+        Kstdio.kprint(cast(string) charStr);
     }
 }
 
@@ -149,7 +151,7 @@ private void parseAndRunCommand(ubyte[] command, ubyte[] args)
         return;
     }
 
-    kprintln;
+    Kstdio.kprintln;
     string[1] invalidCommand = [commandStr];
-    kprintfln!string("Not found command: %s", invalidCommand);
+    Kstdio.kprintfln!string("Not found command: %s", invalidCommand);
 }

@@ -3,9 +3,10 @@
  */
 module os.core.graphic.display;
 
-import os.core.io.kstdio;
-import os.core.io.ports;
-import os.core.util.conversion_util;
+private {
+    alias Kstdio = os.core.io.kstdio;
+    alias Ports = os.core.io.ports;
+}
 
 private
 {
@@ -49,22 +50,22 @@ bool isCursorEnabled()
 }
 
 //https://wiki.osdev.org/Text_Mode_Cursor
-void enableCursor(const ubyte cursorStart = 0, const ubyte cursorEnd = 80)
+void enableCursor(const ubyte cursorStart = 0, const ubyte cursorEnd = TextDisplay.DISPLAY_COLUMNS)
 {
     if (isCursorEnabled)
     {
         return;
     }
 
-    writeToPortByte(0x3D4, 0x0A);
+    Ports.writeToPortByte(0x3D4, 0x0A);
 
-    immutable currStart = readFromPort!ubyte(0x3D5);
-    writeToPortByte(0x3D5, (currStart & 0xC0) | cursorStart);
+    immutable currStart = Ports.readFromPort!ubyte(0x3D5);
+    Ports.writeToPortByte(0x3D5, (currStart & 0xC0) | cursorStart);
 
-    writeToPortByte(0x3D4, 0x0B);
+    Ports.writeToPortByte(0x3D4, 0x0B);
 
-    immutable currEnd = readFromPort!ubyte(0x3D5);
-    writeToPortByte(0x3D5, (currEnd & 0xE0) | cursorEnd);
+    immutable currEnd = Ports.readFromPort!ubyte(0x3D5);
+    Ports.writeToPortByte(0x3D5, (currEnd & 0xE0) | cursorEnd);
 
     cursorEnabled = true;
 }
@@ -77,19 +78,19 @@ void disableCursor()
         return;
     }
 
-    writeToPortByte(0x3D4, 0x0A);
-    writeToPortByte(0x3D5, 0x20);
+    Ports.writeToPortByte(0x3D4, 0x0A);
+    Ports.writeToPortByte(0x3D5, 0x20);
     cursorEnabled = false;
 }
 
 private void updateCursor()
 {
-    immutable uint pos = displayIndexY * 80 + displayIndexX;
+    immutable uint pos = displayIndexY * TextDisplay.DISPLAY_COLUMNS + displayIndexX;
 
-    writeToPortByte(0x3D4, 0x0F);
-    writeToPortByte(0x3D5, (pos & 0xFF));
-    writeToPortByte(0x3D4, 0x0E);
-    writeToPortByte(0x3D5, ((pos >> 8) & 0xFF));
+    Ports.writeToPortByte(0x3D4, 0x0F);
+    Ports.writeToPortByte(0x3D5, (pos & 0xFF));
+    Ports.writeToPortByte(0x3D4, 0x0E);
+    Ports.writeToPortByte(0x3D5, ((pos >> 8) & 0xFF));
 }
 
 private size_t updateCoordinates()
@@ -126,6 +127,7 @@ private void writeToTextVideoMemory(const ubyte value, const ubyte color = 0b111
     //write color
     newAddress++;
     *newAddress = color;
+
     displayIndexX++;
     updateCursor;
 }
@@ -138,7 +140,7 @@ void scroll(uint lines = 1)
 void printChar(const char val, const ubyte color = 0b111)
 {
     //TODO use ascii module
-    if (val == CarriageReturn.LF || val == CarriageReturn.CR)
+    if (val == Kstdio.CarriageReturn.LF || val == Kstdio.CarriageReturn.CR)
     {
         newLine;
         return;
@@ -163,7 +165,7 @@ void printString(const string str, const ubyte color = CGAColors.COLOR_WHITE)
 void println(const string str = "", const ubyte color = 0b111)
 {
     printString(str, color);
-    printChar(CarriageReturn.LF);
+    printChar(Kstdio.CarriageReturn.LF);
 }
 
 void clearScreen()

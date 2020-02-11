@@ -3,9 +3,11 @@
  */
 module os.core.io.kstdio;
 
-import os.core.graphic.display;
-import os.core.util.conversion_util;
-import os.core.util.string_util;
+private {
+    alias Display = os.core.graphic.display;
+    alias ConvertionUtil = os.core.util.conversion_util;
+    alias StringUtil = os.core.util.string_util;
+}
 
 struct CarriageReturn
 {
@@ -13,15 +15,19 @@ struct CarriageReturn
     enum CR = '\r';
 }
 
+void kprintChar(const char charValue, const ubyte color = 0b111){
+    Display.printChar(charValue, color);
+}
+
 void kprint(const string str, const ubyte color = 0b111)
 {
-    printString(str, color);
+    Display.printString(str, color);
 }
 
 void kprintln(const string str = "", const ubyte color = 0b111)
 {
-    printString(str, color);
-    printChar(CarriageReturn.LF);
+    kprint(str, color);
+    kprintChar(CarriageReturn.LF);
 }
 
 void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
@@ -65,7 +71,7 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
                 {
                     static if (is(typeof(arg) : string))
                     {
-                        printString(arg, color);
+                        kprint(arg, color);
                     }
                     continue;
                 }
@@ -73,13 +79,13 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
                 {
                     static if (is(typeof(arg) : long))
                     {
-                        char[20] longValue = longToString(arg, 16);
-                        size_t startIndex = indexOfNotZeroChar(longValue);
+                        char[20] longValue = ConvertionUtil.longToString(arg, 16);
+                        size_t startIndex = StringUtil.indexOfNotZeroChar(longValue);
                         // printString("0x");
                         for (auto i = startIndex; i < longValue.length; i++)
                         {
                             immutable char ch = longValue[i];
-                            printChar(ch);
+                            kprintChar(ch);
                         }
                     }
                     continue;
@@ -97,23 +103,23 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
             continue;
         }
 
-        printChar(formatArg, color);
+        kprintChar(formatArg, color);
     }
 }
 
 private void printNumericValue(const(long) value)
 {
-    const char[20] longValue = longToString(value, 10);
-    size_t startIndex = indexOfNotZeroChar(longValue);
+    const char[20] longValue = ConvertionUtil.longToString(value, 10);
+    size_t startIndex = StringUtil.indexOfNotZeroChar(longValue);
     for (auto i = startIndex; i < longValue.length; i++)
     {
         immutable char ch = longValue[i];
-        printChar(ch);
+        kprintChar(ch);
     }
 }
 
 void kprintfln(T)(const string format, const T[] args, const ubyte color = 0b111)
 {
     kprintf!T(format, args, color);
-    printChar(CarriageReturn.LF);
+    kprintChar(CarriageReturn.LF);
 }

@@ -1,8 +1,13 @@
+/**
+ * Authors: initkfs
+ */
 module os.core.io.interrupt.irq;
 
-import os.core.io.ports;
-import os.core.io.interrupt.idt;
-import os.core.io.interrupt.pic;
+private {
+	alias Ports = os.core.io.ports;
+	alias Idt = os.core.io.interrupt.idt;
+	alias Pic = os.core.io.interrupt.pic;
+}
 
 /*
 * https://wiki.osdev.org/Interrupts
@@ -49,38 +54,38 @@ extern (C) __gshared void isr128();
 //https://wiki.osdev.org/Interrupts_tutorial
 private void remapIRQs()
 {
-	writeToPortByte(PIC1_COMMAND, 0x11);
-	writeToPortByte(PIC2_COMMAND, 0x11);
-	writeToPortByte(PIC1_DATA, 0x20);
-	writeToPortByte(PIC2_DATA, 0x28);
-	writeToPortByte(PIC1_DATA, 0x04);
-	writeToPortByte(PIC2_DATA, 0x02);
-	writeToPortByte(PIC1_DATA, 0x01);
-	writeToPortByte(PIC2_DATA, 0x01);
-	writeToPortByte(PIC1_DATA, 0x00);
-	writeToPortByte(PIC2_DATA, 0x00);
+	Ports.writeToPortByte(Pic.PIC1_COMMAND, 0x11);
+	Ports.writeToPortByte(Pic.PIC2_COMMAND, 0x11);
+	Ports.writeToPortByte(Pic.PIC1_DATA, 0x20);
+	Ports.writeToPortByte(Pic.PIC2_DATA, 0x28);
+	Ports.writeToPortByte(Pic.PIC1_DATA, 0x04);
+	Ports.writeToPortByte(Pic.PIC2_DATA, 0x02);
+	Ports.writeToPortByte(Pic.PIC1_DATA, 0x01);
+	Ports.writeToPortByte(Pic.PIC2_DATA, 0x01);
+	Ports.writeToPortByte(Pic.PIC1_DATA, 0x00);
+	Ports.writeToPortByte(Pic.PIC2_DATA, 0x00);
 }
 
 void setIRQs()
 {
-	remapIRQs();
+	remapIRQs;
 
-	addGateToIDT(32, cast(size_t)&irq0, 0x08, 0x8E);
-	addGateToIDT(33, cast(size_t)&irq1, 0x08, 0x8E);
-	addGateToIDT(34, cast(size_t)&irq2, 0x08, 0x8E);
-	addGateToIDT(35, cast(size_t)&irq3, 0x08, 0x8E);
-	addGateToIDT(36, cast(size_t)&irq4, 0x08, 0x8E);
-	addGateToIDT(37, cast(size_t)&irq5, 0x08, 0x8E);
-	addGateToIDT(38, cast(size_t)&irq6, 0x08, 0x8E);
-	addGateToIDT(39, cast(size_t)&irq7, 0x08, 0x8E);
-	addGateToIDT(40, cast(size_t)&irq8, 0x08, 0x8E);
-	addGateToIDT(41, cast(size_t)&irq9, 0x08, 0x8E);
-	addGateToIDT(42, cast(size_t)&irq10, 0x08, 0x8E);
-	addGateToIDT(43, cast(size_t)&irq11, 0x08, 0x8E);
-	addGateToIDT(44, cast(size_t)&irq12, 0x08, 0x8E);
-	addGateToIDT(45, cast(size_t)&irq13, 0x08, 0x8E);
-	addGateToIDT(46, cast(size_t)&irq14, 0x08, 0x8E);
-	addGateToIDT(47, cast(size_t)&irq15, 0x08, 0x8E);
+	Idt.addGateToIDT(32, cast(size_t)&irq0, 0x08, 0x8E);
+	Idt.addGateToIDT(33, cast(size_t)&irq1, 0x08, 0x8E);
+	Idt.addGateToIDT(34, cast(size_t)&irq2, 0x08, 0x8E);
+	Idt.addGateToIDT(35, cast(size_t)&irq3, 0x08, 0x8E);
+	Idt.addGateToIDT(36, cast(size_t)&irq4, 0x08, 0x8E);
+	Idt.addGateToIDT(37, cast(size_t)&irq5, 0x08, 0x8E);
+	Idt.addGateToIDT(38, cast(size_t)&irq6, 0x08, 0x8E);
+	Idt.addGateToIDT(39, cast(size_t)&irq7, 0x08, 0x8E);
+	Idt.addGateToIDT(40, cast(size_t)&irq8, 0x08, 0x8E);
+	Idt.addGateToIDT(41, cast(size_t)&irq9, 0x08, 0x8E);
+	Idt.addGateToIDT(42, cast(size_t)&irq10, 0x08, 0x8E);
+	Idt.addGateToIDT(43, cast(size_t)&irq11, 0x08, 0x8E);
+	Idt.addGateToIDT(44, cast(size_t)&irq12, 0x08, 0x8E);
+	Idt.addGateToIDT(45, cast(size_t)&irq13, 0x08, 0x8E);
+	Idt.addGateToIDT(46, cast(size_t)&irq14, 0x08, 0x8E);
+	Idt.addGateToIDT(47, cast(size_t)&irq15, 0x08, 0x8E);
 }
 
 // void sendInerruptEnd(unsigned char irq)

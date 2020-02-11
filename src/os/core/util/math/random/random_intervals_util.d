@@ -1,7 +1,7 @@
-module os.core.util.math.random.random_intervals_util;
 /**
  * Authors: initkfs
  */
+module os.core.util.math.random.random_intervals_util;
 
 //[min, max]
 @safe pure T toClosedInterval(T)(T value, T minExclusive, T maxExclusive)

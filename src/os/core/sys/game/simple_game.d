@@ -1,8 +1,13 @@
+/**
+ * Authors: initkfs
+ */
 module os.core.sys.game.simple_game;
 
-import os.core.graphic.display;
-import os.core.io.kstdio;
-import os.core.memory.allocators.linear;
+private {
+    alias Display = os.core.graphic.display;
+    alias Kstdio = os.core.io.kstdio;
+    alias LinearAllocator = os.core.memory.allocators.linear;
+}
 
 private __gshared bool isRunning = false;
 private __gshared enum playerStartXPosition = 40;
@@ -50,8 +55,8 @@ void gameRun()
     long startEnemyX = 5;
     for (int i = 0; i < enemies.length; i++)
     {
-        ulong* enemyXPtr = allocLinearQword;
-        ulong* enemyYPtr = allocLinearQword;
+        ulong* enemyXPtr = LinearAllocator.allocLinearQword;
+        ulong* enemyYPtr = LinearAllocator.allocLinearQword;
         *enemyXPtr = startEnemyX;
         *enemyYPtr = 0;
         enemies[i] = Enemy(enemyXPtr, enemyYPtr);
@@ -103,7 +108,7 @@ void gameUpdate(char keyboardKey = '?')
         }
     }
 
-    clearScreen;
+    Display.clearScreen;
 
     if (keyboardKey == 'D' || keyboardKey == 'd')
     {
@@ -123,8 +128,8 @@ void gameUpdate(char keyboardKey = '?')
     }
 
     //TODO scene matrix [][]
-    long columns = TextDisplay.DISPLAY_COLUMNS;
-    long lines = TextDisplay.DISPLAY_LINES;
+    long columns = Display.TextDisplay.DISPLAY_COLUMNS;
+    long lines = Display.TextDisplay.DISPLAY_LINES;
 
     playerXPosition = clamp!long(playerXPosition, 0, columns - 1);
     playerYPosition = clamp!long(playerYPosition, 0, 20 - 1);
@@ -144,7 +149,7 @@ void gameUpdate(char keyboardKey = '?')
         *enemy.enemyYPosition = clamp!long(*enemy.enemyYPosition, 0, lines - 1);
     }
 
-    if (playerXPosition == 0 || playerXPosition == TextDisplay.DISPLAY_COLUMNS - 1)
+    if (playerXPosition == 0 || playerXPosition == Display.TextDisplay.DISPLAY_COLUMNS - 1)
     {
         gameEnd;
         return;
@@ -164,36 +169,36 @@ void gameUpdate(char keyboardKey = '?')
             {
                 if (currentColumn == enemy.enemyX && currentLine == enemy.enemyY)
                 {
-                    kprint("|");
+                    Kstdio.kprint("|");
                     continue eachColumn;
                 }
             }
 
             if (currentColumn == playerXPosition && currentLine == playerYPosition)
             {
-                kprint("+");
+                Kstdio.kprint("+");
             }
             else
             {
-                skipColumn;
+                Display.skipColumn;
             }
 
         }
-        newLine;
+        Display.newLine;
     }
 }
 
 private void gameEnd()
 {
-    clearScreen;
-    kprintln("Congratulations! You won the game!");
+    Display.clearScreen;
+    Kstdio.kprintln("Congratulations! You won the game!");
     gameStop;
 }
 
 private void gameOver()
 {
-    clearScreen;
-    kprintln("Game over");
+    Display.clearScreen;
+    Kstdio.kprintln("Game over");
     gameStop;
 }
 

@@ -4,9 +4,9 @@
 //https://wiki.osdev.org/PS/2_Keyboard
 module os.core.io.keyboard;
 
-import os.core.io.kstdio;
-import os.core.io.ports;
-import os.core.util.conversion_util;
+private {
+	alias Ports = os.core.io.ports;
+}
 
 private __gshared char[178] scanCodeTable = [
 	'\?', '\?', //0 unused
@@ -86,7 +86,7 @@ bool isPressed(const char code) @safe pure
 
 ubyte scanKeyCode()
 {
-	immutable ubyte scanCode = readFromPort!(ubyte)(0x60);
+	immutable ubyte scanCode = Ports.readFromPort!(ubyte)(0x60);
 
 	if (scanCode & 0x80)
 	{

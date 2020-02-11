@@ -3,7 +3,9 @@
  */
 module os.core.io.interrupt.isr;
 
-import os.core.io.interrupt.idt;
+private {
+	alias Idt = os.core.io.interrupt.idt;
+}
 
 /*
 * https://wiki.osdev.org/Exceptions
@@ -70,38 +72,38 @@ extern (C) __gshared void isr128();
 
 void setISRs()
 {
-	addGateToIDT(0, cast(size_t)&isr0, 0x08, 0x8E); //0x08 = kernel code segment, 0x8E = interrupt present, type = interrupt gate
-	addGateToIDT(1, cast(size_t)&isr1, 0x08, 0x8E);
-	addGateToIDT(2, cast(size_t)&isr2, 0x08, 0x8E);
-	addGateToIDT(3, cast(size_t)&isr3, 0x08, 0x8E);
-	addGateToIDT(4, cast(size_t)&isr4, 0x08, 0x8E);
-	addGateToIDT(5, cast(size_t)&isr5, 0x08, 0x8E);
-	addGateToIDT(6, cast(size_t)&isr6, 0x08, 0x8E);
-	addGateToIDT(7, cast(size_t)&isr7, 0x08, 0x8E);
-	addGateToIDT(8, cast(size_t)&isr8, 0x08, 0x8E);
-	addGateToIDT(9, cast(size_t)&isr9, 0x08, 0x8E);
-	addGateToIDT(10, cast(size_t)&isr10, 0x08, 0x8E);
-	addGateToIDT(11, cast(size_t)&isr11, 0x08, 0x8E);
-	addGateToIDT(12, cast(size_t)&isr12, 0x08, 0x8E);
-	addGateToIDT(13, cast(size_t)&isr13, 0x08, 0x8E);
-	addGateToIDT(14, cast(size_t)&isr14, 0x08, 0x8E);
-	addGateToIDT(15, cast(size_t)&isr15, 0x08, 0x8E);
-	addGateToIDT(16, cast(size_t)&isr16, 0x08, 0x8E);
-	addGateToIDT(17, cast(size_t)&isr17, 0x08, 0x8E);
-	addGateToIDT(18, cast(size_t)&isr18, 0x08, 0x8E);
-	addGateToIDT(19, cast(size_t)&isr19, 0x08, 0x8E);
-	addGateToIDT(20, cast(size_t)&isr20, 0x08, 0x8E);
-	addGateToIDT(21, cast(size_t)&isr21, 0x08, 0x8E);
-	addGateToIDT(22, cast(size_t)&isr22, 0x08, 0x8E);
-	addGateToIDT(23, cast(size_t)&isr23, 0x08, 0x8E);
-	addGateToIDT(24, cast(size_t)&isr24, 0x08, 0x8E);
-	addGateToIDT(25, cast(size_t)&isr25, 0x08, 0x8E);
-	addGateToIDT(26, cast(size_t)&isr26, 0x08, 0x8E);
-	addGateToIDT(27, cast(size_t)&isr27, 0x08, 0x8E);
-	addGateToIDT(28, cast(size_t)&isr28, 0x08, 0x8E);
-	addGateToIDT(29, cast(size_t)&isr29, 0x08, 0x8E);
-	addGateToIDT(30, cast(size_t)&isr30, 0x08, 0x8E);
-	addGateToIDT(31, cast(size_t)&isr31, 0x08, 0x8E);
+	Idt.addGateToIDT(0, cast(size_t)&isr0, 0x08, 0x8E); //0x08 = kernel code segment, 0x8E = interrupt present, type = interrupt gate
+	Idt.addGateToIDT(1, cast(size_t)&isr1, 0x08, 0x8E);
+	Idt.addGateToIDT(2, cast(size_t)&isr2, 0x08, 0x8E);
+	Idt.addGateToIDT(3, cast(size_t)&isr3, 0x08, 0x8E);
+	Idt.addGateToIDT(4, cast(size_t)&isr4, 0x08, 0x8E);
+	Idt.addGateToIDT(5, cast(size_t)&isr5, 0x08, 0x8E);
+	Idt.addGateToIDT(6, cast(size_t)&isr6, 0x08, 0x8E);
+	Idt.addGateToIDT(7, cast(size_t)&isr7, 0x08, 0x8E);
+	Idt.addGateToIDT(8, cast(size_t)&isr8, 0x08, 0x8E);
+	Idt.addGateToIDT(9, cast(size_t)&isr9, 0x08, 0x8E);
+	Idt.addGateToIDT(10, cast(size_t)&isr10, 0x08, 0x8E);
+	Idt.addGateToIDT(11, cast(size_t)&isr11, 0x08, 0x8E);
+	Idt.addGateToIDT(12, cast(size_t)&isr12, 0x08, 0x8E);
+	Idt.addGateToIDT(13, cast(size_t)&isr13, 0x08, 0x8E);
+	Idt.addGateToIDT(14, cast(size_t)&isr14, 0x08, 0x8E);
+	Idt.addGateToIDT(15, cast(size_t)&isr15, 0x08, 0x8E);
+	Idt.addGateToIDT(16, cast(size_t)&isr16, 0x08, 0x8E);
+	Idt.addGateToIDT(17, cast(size_t)&isr17, 0x08, 0x8E);
+	Idt.addGateToIDT(18, cast(size_t)&isr18, 0x08, 0x8E);
+	Idt.addGateToIDT(19, cast(size_t)&isr19, 0x08, 0x8E);
+	Idt.addGateToIDT(20, cast(size_t)&isr20, 0x08, 0x8E);
+	Idt.addGateToIDT(21, cast(size_t)&isr21, 0x08, 0x8E);
+	Idt.addGateToIDT(22, cast(size_t)&isr22, 0x08, 0x8E);
+	Idt.addGateToIDT(23, cast(size_t)&isr23, 0x08, 0x8E);
+	Idt.addGateToIDT(24, cast(size_t)&isr24, 0x08, 0x8E);
+	Idt.addGateToIDT(25, cast(size_t)&isr25, 0x08, 0x8E);
+	Idt.addGateToIDT(26, cast(size_t)&isr26, 0x08, 0x8E);
+	Idt.addGateToIDT(27, cast(size_t)&isr27, 0x08, 0x8E);
+	Idt.addGateToIDT(28, cast(size_t)&isr28, 0x08, 0x8E);
+	Idt.addGateToIDT(29, cast(size_t)&isr29, 0x08, 0x8E);
+	Idt.addGateToIDT(30, cast(size_t)&isr30, 0x08, 0x8E);
+	Idt.addGateToIDT(31, cast(size_t)&isr31, 0x08, 0x8E);
 	//syscall
-	addGateToIDT(128, cast(size_t)&isr128, 0x08, 0x8E);
+	Idt.addGateToIDT(128, cast(size_t)&isr128, 0x08, 0x8E);
 }

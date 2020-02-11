@@ -3,9 +3,11 @@
  */
 module os.core.sys.date.stdate;
 
-import os.core.io.kstdio;
-import os.core.io.ports;
-import os.core.io.interrupt.irq;
+private {
+    alias Kstdio = os.core.io.kstdio;
+    alias Ports = os.core.io.ports;
+    alias Irq = os.core.io.interrupt.irq;
+}
 
 //https://wiki.osdev.org/CMOS
 
@@ -48,8 +50,8 @@ private
 
 private ubyte readFromRTCRegister(const ubyte reg)
 {
-    writeToPortByte(cmos_address, reg);
-    immutable ubyte rtcValue = readFromPort!ubyte(cmos_data);
+    Ports.writeToPortByte(cmos_address, reg);
+    immutable ubyte rtcValue = Ports.readFromPort!ubyte(cmos_data);
     return rtcValue;
 }
 
@@ -76,7 +78,8 @@ void printDateTime()
 
     ubyte[6] dtInfo = [dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second];
 
-    kprintln;
+    //TODO move to main entry
+    Kstdio.kprintln;
     //TODO format lead zero, full year, etc
-    kprintfln!ubyte("%x-%x-%x %x-%x-%x", dtInfo);
+    Kstdio.kprintfln!ubyte("%x-%x-%x %x-%x-%x", dtInfo);
 }

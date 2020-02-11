@@ -1,7 +1,8 @@
-module os.core.util.math.random.random_unsafe;
 /**
  * Authors: initkfs
  */
+module os.core.util.math.random.random_unsafe;
+
 import os.core.util.math.random.random_intervals_util;
 
 private __gshared ulong next = 11_111;

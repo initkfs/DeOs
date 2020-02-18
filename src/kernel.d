@@ -21,6 +21,10 @@ alias SimpleGame = os.core.sys.game.simple_game;
 alias UptimeTimer = os.core.timer.uptime_timer;
 alias PauseTimer = os.core.timer.pause_timer;
 
+alias TestUtil = os.core.util.test_util;
+alias ConversionUtil = os.core.util.conversion_util;
+alias StringUtil = os.core.util.string_util;
+
 extern (C) __gshared ulong KERNEL_END;
 
 private __gshared string osLogoData = import("os_logo.txt");
@@ -44,6 +48,16 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	Irq.setIRQs;
 	Idt.setIDT;
 
+	Kstdio.kprintln(osLogoData, Display.CGAColors.COLOR_LIGHT_GREEN);
+	PauseTimer.pauseInTicks(5);
+	Display.clearScreen;
+
+	Kstdio.kprintln("Testing modules...");
+	TestUtil.runTest!(ConversionUtil);
+	TestUtil.runTest!(StringUtil);
+
+	Display.clearScreen;
+
 	Cli.cliCommands[0] = Cli.CliCommand("exit", "Immediate shutdown", &exitNowCommand);
 	Cli.cliCommands[1] = Cli.CliCommand("clear", "Clear screen", &clearScreenCommand);
 	Cli.cliCommands[2] = Cli.CliCommand("date",
@@ -51,12 +65,6 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	Cli.cliCommands[3] = Cli.CliCommand("mem", "Print memory information", &memDebugCommand);
 	Cli.cliCommands[4] = Cli.CliCommand("game", "Run simple game", &runSimpleGameCommand);
 	Cli.cliCommands[5] = Cli.CliCommand("info", "Print hardware information", &infoCommand);
-
-	Kstdio.kprintln(osLogoData, Display.CGAColors.COLOR_LIGHT_GREEN);
-
-	PauseTimer.pauseInTicks(5);
-
-	Display.clearScreen;
 
 	//TODO remove cursor
 	Cli.enableCli;
@@ -81,7 +89,9 @@ private void memDebugCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) ar
 
 	Kstdio.kprintln;
 
-	const long[1] memStartAddrValues = [cast(long) LinearAllocator.getMemoryStart];
+	const long[1] memStartAddrValues = [
+		cast(long) LinearAllocator.getMemoryStart
+	];
 	Kstdio.kprintfln(memStartFormat, memStartAddrValues);
 
 	if (LinearAllocator.getCurrentMemoryPosition !is null)
@@ -92,7 +102,8 @@ private void memDebugCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) ar
 		];
 		Kstdio.kprintfln(memCurrentFormat, memCurrentAddrValues);
 
-		const long memUsedValue = LinearAllocator.getCurrentMemoryPosition - LinearAllocator.getMemoryStart;
+		const long memUsedValue = LinearAllocator.getCurrentMemoryPosition
+			- LinearAllocator.getMemoryStart;
 		const long[1] memUsedValues = [memUsedValue];
 		Kstdio.kprintfln(memUsedFormat, memUsedValues);
 	}

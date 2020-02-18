@@ -1,35 +1,31 @@
 {
-	"description": "DeOs, a toy OS for educational purposes",
-	"license": "",
-	"authors": [
-		"initkfs"
-	],
-	"copyright": "Copyright © 2019, initkfs",
-	"name": "deos",
-	"configurations": [
-		{
-			"name": "deos-main",
-			"buildOptions": [
-			"debugMode", "debugInfo"
-		],
-			"dflags-dmd": [
-			"-vtls", 
-			"-betterC", 
-			"-m64", 
-			"-c",
-			"-boundscheck=off", 
-			"-release",
-			"-J=./data"
-			],
-			"targetType": "staticLibrary",
-			"targetName": "kernel.o",
-			"targetPath": "./build",
-			"sourcePaths": ["./src"],
-			"importPaths": ["./src"],
-			"postBuildCommands": [
-			]
-		}
-	],
-	"dependencies": {
-	}
+    "description": "DeOs, a toy OS for educational purposes",
+    "license": "",
+    "authors": [
+        "initkfs"
+    ],
+    "copyright": "Copyright © 2019, initkfs",
+    "name": "deos",
+    "configurations": [{
+        "name": "deos-main",
+        "buildOptions": [
+            "debugMode", "debugInfo", "unittests"
+        ],
+        "dflags-dmd": [
+            "-vtls",
+            "-betterC",
+            "-m64",
+            "-c",
+            "-boundscheck=off",
+            "-release",
+            "-J=./data"
+        ],
+        "targetType": "staticLibrary",
+        "targetName": "kernel.o",
+        "targetPath": "./build",
+        "sourcePaths": ["./src"],
+        "importPaths": ["./src"],
+        "postBuildCommands": []
+    }],
+    "dependencies": {}
 }

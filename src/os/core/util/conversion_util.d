@@ -51,7 +51,7 @@ private void reverse(char[] s) @safe pure
 /*
 * https://stackoverflow.com/questions/18858115/c-long-long-to-char-conversion-function-in-embedded-system
 */
-char[20] longToString(const long longValue, const int base) @safe pure
+char[20] longToChars(const long longValue, const int base) @safe pure
 {
   char[20] buf = "00000000000000000000";
   immutable char[16] alphabet = "0123456789ABCDEF";
@@ -65,7 +65,7 @@ char[20] longToString(const long longValue, const int base) @safe pure
 
   if (val == 0)
   {
-    return "0";
+    return buf;
   }
 
   immutable maxDigits = 19;
@@ -91,14 +91,16 @@ char[20] longToString(const long longValue, const int base) @safe pure
   return buf;
 }
 
-// unittest
-// {
-//   assert("0" == longToString(0, 10));
-//   assert("1" == longToString(1, 10));
-//   assert("-1" == longToString(-1, 10));
-//   assert("648356" == longToString(648356, 10));
-//   assert("9223372036854775807" == longToString(9223372036854775807, 10));
-//   assert("-9223372036854775807" == longToString(-9223372036854775807, 10));
-//   assert("7FFFFFFFFFFFFFFF" == longToString(0x7FFFFFFFFFFFFFFF, 16));
-//   //TODO negative hex?
-// }
+unittest
+{
+  import os.core.util.assertions_util;
+
+  kassert("00000000000000000000" == longToChars(0, 10));
+  kassert("00000000000000000001" == longToChars(1, 10));
+  kassert("000000000000000000-1" == longToChars(-1, 10));
+  kassert("00000000000000648356" == longToChars(648356, 10));
+  kassert("09223372036854775807" == longToChars(9223372036854775807, 10));
+  kassert("-9223372036854775807" == longToChars(-9223372036854775807, 10));
+  kassert("00007FFFFFFFFFFFFFFF" == longToChars(0x7FFFFFFFFFFFFFFF, 16));
+  //TODO negative hex?
+}

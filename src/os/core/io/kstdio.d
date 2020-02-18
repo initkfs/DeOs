@@ -79,7 +79,7 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
                 {
                     static if (is(typeof(arg) : long))
                     {
-                        char[20] longValue = ConvertionUtil.longToString(arg, 16);
+                        char[20] longValue = ConvertionUtil.longToChars(arg, 16);
                         size_t startIndex = StringUtil.indexOfNotZeroChar(longValue);
                         // printString("0x");
                         for (auto i = startIndex; i < longValue.length; i++)
@@ -109,7 +109,7 @@ void kprintf(T)(const string format, const T[] args, const ubyte color = 0b111)
 
 private void printNumericValue(const(long) value)
 {
-    const char[20] longValue = ConvertionUtil.longToString(value, 10);
+    const char[20] longValue = ConvertionUtil.longToChars(value, 10);
     size_t startIndex = StringUtil.indexOfNotZeroChar(longValue);
     for (auto i = startIndex; i < longValue.length; i++)
     {

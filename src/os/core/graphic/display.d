@@ -3,17 +3,10 @@
  */
 module os.core.graphic.display;
 
-private {
-    alias Kstdio = os.core.io.kstdio;
-    alias Ports = os.core.io.ports;
-}
-
 private
 {
-    __gshared ubyte* TEXT_VIDEO_MEMORY_ADDRESS = cast(ubyte*) 0xB8000;
-    __gshared int displayIndexX = 0;
-    __gshared int displayIndexY = 0;
-    __gshared bool cursorEnabled = false;
+    alias Kstdio = os.core.io.kstdio;
+    alias Ports = os.core.io.ports;
 }
 
 __gshared struct TextDisplay
@@ -44,6 +37,17 @@ __gshared struct CGAColors
     enum COLOR_WHITE = 15; //FF FF FF
 }
 
+private
+{
+    __gshared ubyte* TEXT_VIDEO_MEMORY_ADDRESS = cast(ubyte*) 0xB8000;
+    __gshared bool cursorEnabled = false;
+
+    __gshared int displayIndexX = 0;
+    __gshared int displayIndexY = 0;
+
+    __gshared const int DEFAULT_TEXT_COLOR = CGAColors.COLOR_GRAY;
+}
+
 bool isCursorEnabled()
 {
     return cursorEnabled;
@@ -59,12 +63,12 @@ void enableCursor(const ubyte cursorStart = 0, const ubyte cursorEnd = TextDispl
 
     Ports.writeToPortByte(0x3D4, 0x0A);
 
-    immutable currStart = Ports.readFromPort!ubyte(0x3D5);
+    const currStart = Ports.readFromPort!ubyte(0x3D5);
     Ports.writeToPortByte(0x3D5, (currStart & 0xC0) | cursorStart);
 
     Ports.writeToPortByte(0x3D4, 0x0B);
 
-    immutable currEnd = Ports.readFromPort!ubyte(0x3D5);
+    const currEnd = Ports.readFromPort!ubyte(0x3D5);
     Ports.writeToPortByte(0x3D5, (currEnd & 0xE0) | cursorEnd);
 
     cursorEnabled = true;
@@ -85,7 +89,7 @@ void disableCursor()
 
 private void updateCursor()
 {
-    immutable uint pos = displayIndexY * TextDisplay.DISPLAY_COLUMNS + displayIndexX;
+    const uint pos = displayIndexY * TextDisplay.DISPLAY_COLUMNS + displayIndexX;
 
     Ports.writeToPortByte(0x3D4, 0x0F);
     Ports.writeToPortByte(0x3D5, (pos & 0xFF));
@@ -95,14 +99,23 @@ private void updateCursor()
 
 private size_t updateCoordinates()
 {
-    //position = (y_position * characters_per_line) + x_position;
-    if (displayIndexX > TextDisplay.DISPLAY_COLUMNS)
+    if (displayIndexX > TextDisplay.DISPLAY_COLUMNS - 1)
     {
         newLine;
     }
 
-    immutable position = displayIndexY * 160 + displayIndexX * 2;
-    return position;
+    //row = chars in row * 2 (char + color)
+    const rowBytesCount = displayIndexY * TextDisplay.DISPLAY_COLUMNS * 2;
+    const currentColumnBytesCount = displayIndexX * 2;
+
+    const positionByteX = rowBytesCount + currentColumnBytesCount;
+    return positionByteX;
+}
+
+private void resetCoordinates()
+{
+    displayIndexX = 0;
+    displayIndexY = 0;
 }
 
 void newLine()
@@ -111,22 +124,24 @@ void newLine()
     displayIndexX = 0;
 }
 
-void skipColumn(){
+void skipColumn()
+{
     displayIndexX++;
     updateCoordinates;
 }
 
-private void writeToTextVideoMemory(const ubyte value, const ubyte color = 0b111)
+private void writeToTextVideoMemory(size_t position, const ubyte value,
+        const ubyte color = DEFAULT_TEXT_COLOR)
 {
-    auto textVideoMemoryAddress = TEXT_VIDEO_MEMORY_ADDRESS;
+    TEXT_VIDEO_MEMORY_ADDRESS[position] = value;
+    TEXT_VIDEO_MEMORY_ADDRESS[position + 1] = color;
+}
 
-    immutable size_t position = updateCoordinates;
+private void printToTextVideoMemory(const ubyte value, const ubyte color = DEFAULT_TEXT_COLOR)
+{
+    const size_t position = updateCoordinates;
 
-    ubyte* newAddress = textVideoMemoryAddress + position;
-    *newAddress = value;
-    //write color
-    newAddress++;
-    *newAddress = color;
+    writeToTextVideoMemory(position, value, color);
 
     displayIndexX++;
     updateCursor;
@@ -135,9 +150,11 @@ private void writeToTextVideoMemory(const ubyte value, const ubyte color = 0b111
 void scroll(uint lines = 1)
 {
     //TODO text buffer
+    clearScreen;
+    resetCoordinates;
 }
 
-void printChar(const char val, const ubyte color = 0b111)
+void printChar(const char val, const ubyte color = DEFAULT_TEXT_COLOR)
 {
     //TODO use ascii module
     if (val == Kstdio.CarriageReturn.LF || val == Kstdio.CarriageReturn.CR)
@@ -146,15 +163,15 @@ void printChar(const char val, const ubyte color = 0b111)
         return;
     }
 
-    if (displayIndexY >= TextDisplay.DISPLAY_LINES)
+    if (displayIndexY > TextDisplay.DISPLAY_LINES - 1)
     {
         scroll;
     }
 
-    writeToTextVideoMemory(val, color);
+    printToTextVideoMemory(val, color);
 }
 
-void printString(const string str, const ubyte color = CGAColors.COLOR_WHITE)
+void printString(const string str, const ubyte color = DEFAULT_TEXT_COLOR)
 {
     foreach (char c; str)
     {
@@ -162,7 +179,7 @@ void printString(const string str, const ubyte color = CGAColors.COLOR_WHITE)
     }
 }
 
-void println(const string str = "", const ubyte color = 0b111)
+void println(const string str = "", const ubyte color = DEFAULT_TEXT_COLOR)
 {
     printString(str, color);
     printChar(Kstdio.CarriageReturn.LF);
@@ -170,14 +187,20 @@ void println(const string str = "", const ubyte color = 0b111)
 
 void clearScreen()
 {
-    immutable color = 0b111;
-    //TODO check display index;
-    immutable displayMatrix = TextDisplay.DISPLAY_COLUMNS * TextDisplay.DISPLAY_LINES;
-    foreach (index; 0 .. displayMatrix)
-    {
-        TEXT_VIDEO_MEMORY_ADDRESS[index * 2] = ' ';
-        TEXT_VIDEO_MEMORY_ADDRESS[index * 2 + 1] = color;
+    bool isCursorDisabled = false;
+    if(cursorEnabled){
+        disableCursor;
+        isCursorDisabled = true;
     }
-    displayIndexX = 0;
-    displayIndexY = 0;
+    resetCoordinates;
+    immutable charCount = TextDisplay.DISPLAY_COLUMNS * TextDisplay.DISPLAY_LINES;
+    foreach (index; 0 .. charCount)
+    {
+        //don't use black color
+        printToTextVideoMemory(' ');
+    }
+    resetCoordinates;
+    if(isCursorDisabled){
+        enableCursor;
+    }
 }

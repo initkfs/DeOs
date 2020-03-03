@@ -6,6 +6,8 @@ module kernel;
 import os.core.util.assertions_util;
 
 alias Display = os.core.graphic.display;
+alias TextDrawer = os.core.graphic.text_drawer;
+alias TextBoxDrawer = os.core.graphic.text_box_drawer;
 alias Kstdio = os.core.io.kstdio;
 alias Keyboard = os.core.io.keyboard;
 alias Ports = os.core.io.ports;

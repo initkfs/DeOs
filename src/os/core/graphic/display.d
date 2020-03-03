@@ -35,6 +35,7 @@ __gshared struct CGAColors
     enum COLOR_LIGHT_PURPLE = 13; //FF 55 FF
     enum COLOR_YELLOW = 14; //FF FF 55
     enum COLOR_WHITE = 15; //FF FF FF
+    enum DEFAULT_TEXT_COLOR = COLOR_GRAY;
 }
 
 private
@@ -44,8 +45,6 @@ private
 
     __gshared int displayIndexX = 0;
     __gshared int displayIndexY = 0;
-
-    __gshared const int DEFAULT_TEXT_COLOR = CGAColors.COLOR_GRAY;
 }
 
 bool isCursorEnabled()
@@ -131,13 +130,14 @@ void skipColumn()
 }
 
 private void writeToTextVideoMemory(size_t position, const ubyte value,
-        const ubyte color = DEFAULT_TEXT_COLOR)
+        const ubyte color = CGAColors.DEFAULT_TEXT_COLOR)
 {
     TEXT_VIDEO_MEMORY_ADDRESS[position] = value;
     TEXT_VIDEO_MEMORY_ADDRESS[position + 1] = color;
 }
 
-private void printToTextVideoMemory(const ubyte value, const ubyte color = DEFAULT_TEXT_COLOR)
+private void printToTextVideoMemory(const ubyte value,
+        const ubyte color = CGAColors.DEFAULT_TEXT_COLOR)
 {
     const size_t position = updateCoordinates;
 
@@ -154,10 +154,27 @@ void scroll(uint lines = 1)
     resetCoordinates;
 }
 
-void printChar(const char val, const ubyte color = DEFAULT_TEXT_COLOR)
+void printCharRepeat(const char symbol, const size_t repeatCount = 1,
+        const ubyte color = CGAColors.DEFAULT_TEXT_COLOR)
+{
+
+    size_t mustBeSymboltring = repeatCount;
+    const size_t maxChars = TextDisplay.DISPLAY_COLUMNS * TextDisplay.DISPLAY_LINES;
+    if (mustBeSymboltring > maxChars)
+    {
+        mustBeSymboltring = maxChars;
+    }
+
+    foreach (index; 0 .. mustBeSymboltring)
+    {
+        printChar(symbol, color);
+    }
+}
+
+void printChar(const char symbol, const ubyte color = CGAColors.DEFAULT_TEXT_COLOR)
 {
     //TODO use ascii module
-    if (val == Kstdio.CarriageReturn.LF || val == Kstdio.CarriageReturn.CR)
+    if (symbol == Kstdio.CarriageReturn.LF || symbol == Kstdio.CarriageReturn.CR)
     {
         newLine;
         return;
@@ -168,10 +185,25 @@ void printChar(const char val, const ubyte color = DEFAULT_TEXT_COLOR)
         scroll;
     }
 
-    printToTextVideoMemory(val, color);
+    printToTextVideoMemory(symbol, color);
 }
 
-void printString(const string str, const ubyte color = DEFAULT_TEXT_COLOR)
+/*
+* The symbol must be known at compile time.
+* TextDrawer.drawUntil!('*', (symbol, symbolCount) => symbolCount <= 5); //*****
+*/
+void printCharUntil(const char symbol, bool function(const char, const size_t) symbolCountPredicate,
+        const ubyte color = Display.CGAColors.DEFAULT_TEXT_COLOR)()
+{
+    size_t charsCount = 1;
+    while (symbolCountPredicate(symbol, charsCount))
+    {
+        Display.printChar(symbol, color);
+        charsCount++;
+    }
+}
+
+void printString(const string str, const ubyte color = CGAColors.DEFAULT_TEXT_COLOR)
 {
     foreach (char c; str)
     {
@@ -179,16 +211,40 @@ void printString(const string str, const ubyte color = DEFAULT_TEXT_COLOR)
     }
 }
 
-void println(const string str = "", const ubyte color = DEFAULT_TEXT_COLOR)
+void printStringRepeat(const string str, const size_t repeatCount = 1,
+        const ubyte color = CGAColors.DEFAULT_TEXT_COLOR)
+{
+
+    size_t mustBeStringCount = repeatCount;
+    const size_t maxStrings = (TextDisplay.DISPLAY_LINES * TextDisplay.DISPLAY_COLUMNS) / str
+        .length;
+    if (mustBeStringCount > maxStrings)
+    {
+        mustBeStringCount = maxStrings;
+    }
+
+    foreach (index; 0 .. mustBeStringCount)
+    {
+        printString(str, color);
+    }
+}
+
+void println(const string str = "", const ubyte color = CGAColors.DEFAULT_TEXT_COLOR)
 {
     printString(str, color);
     printChar(Kstdio.CarriageReturn.LF);
 }
 
+void printSpace(const size_t count = 1, const char spaceChar = ' ')
+{
+   printCharRepeat(spaceChar, count);
+}
+
 void clearScreen()
 {
     bool isCursorDisabled = false;
-    if(cursorEnabled){
+    if (cursorEnabled)
+    {
         disableCursor;
         isCursorDisabled = true;
     }
@@ -200,7 +256,8 @@ void clearScreen()
         printToTextVideoMemory(' ');
     }
     resetCoordinates;
-    if(isCursorDisabled){
+    if (isCursorDisabled)
+    {
         enableCursor;
     }
 }

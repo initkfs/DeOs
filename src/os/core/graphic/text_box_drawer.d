@@ -22,6 +22,22 @@ void drawBoxBottom(const ubyte color = Display.CGAColors.DEFAULT_TEXT_COLOR,
     TextDrawer.drawLine(symbol, color);
 }
 
+void drawBoxHeader(const string text = "",
+        const ubyte color = Display.CGAColors.DEFAULT_TEXT_COLOR, const char symbol = sideSymbol)
+{
+    const size_t lineWidth = Display.TextDisplay.DISPLAY_COLUMNS - 2;
+    Display.printChar(symbol, color);
+    TextDrawer.drawCenterText(text, color, lineWidth);
+    Display.printChar(symbol, color);
+}
+
+void drawSimpleBox(const string text = "",
+        const ubyte color = Display.CGAColors.DEFAULT_TEXT_COLOR, const char symbol = sideSymbol){
+    drawBoxTop(color, symbol);
+	drawBoxHeader(text, color, symbol);
+	drawBoxBottom(color, symbol);
+}
+
 void drawBoxSides(const size_t sideHeight = 1,
         const ubyte color = Display.CGAColors.DEFAULT_TEXT_COLOR, const char symbol = sideSymbol)
 {

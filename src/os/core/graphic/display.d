@@ -38,6 +38,14 @@ __gshared struct CGAColors
     enum DEFAULT_TEXT_COLOR = COLOR_GRAY;
 }
 
+__gshared struct CGAInfoColors
+{
+    enum COLOR_SUCCESS = CGAColors.COLOR_LIGHT_GREEN;
+    enum COLOR_WARNING = CGAColors.COLOR_YELLOW;
+    enum COLOR_INFO = CGAColors.COLOR_CYAN;
+    enum COLOR_ERROR = CGAColors.COLOR_LIGHT_RED;
+}
+
 private
 {
     __gshared ubyte* TEXT_VIDEO_MEMORY_ADDRESS = cast(ubyte*) 0xB8000;

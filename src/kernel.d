@@ -29,7 +29,12 @@ alias StringUtil = os.core.util.string_util;
 
 extern (C) __gshared ulong KERNEL_END;
 
-private __gshared string osLogoData = import("os_logo.txt");
+private
+{
+	__gshared string osLogoData = import("os_logo.txt");
+	__gshared string osName = "DeOs";
+	__gshared string osVersion = "0.1a";
+}
 
 //TODO extract and switch context. Delegates don't work from another module
 private __gshared bool isGame = false;
@@ -60,6 +65,9 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 
 	Display.clearScreen;
 
+	const ubyte uiInfoColor = Display.CGAInfoColors.COLOR_INFO;
+	Cli.setCliPromptColor(uiInfoColor);
+	
 	Cli.cliCommands[0] = Cli.CliCommand("exit", "Immediate shutdown", &exitNowCommand);
 	Cli.cliCommands[1] = Cli.CliCommand("clear", "Clear screen", &clearScreenCommand);
 	Cli.cliCommands[2] = Cli.CliCommand("date",
@@ -67,6 +75,8 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	Cli.cliCommands[3] = Cli.CliCommand("mem", "Print memory information", &memDebugCommand);
 	Cli.cliCommands[4] = Cli.CliCommand("game", "Run simple game", &runSimpleGameCommand);
 	Cli.cliCommands[5] = Cli.CliCommand("info", "Print hardware information", &infoCommand);
+
+	TextBoxDrawer.drawSimpleBox(osName, uiInfoColor);
 
 	//TODO remove cursor
 	Cli.enableCli;

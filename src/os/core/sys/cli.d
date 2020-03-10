@@ -13,6 +13,9 @@ private
     __gshared ubyte[100] shellCommandBuffer = [];
     __gshared bool isActiveShell = false;
     __gshared ubyte[100] cliCommandBuffer = [];
+    __gshared ubyte cliPromptColor = Display.CGAColors.DEFAULT_TEXT_COLOR;
+    __gshared ubyte cliErrorColor = Display.CGAInfoColors.COLOR_ERROR;
+    __gshared ubyte cliInfoColor = Display.CGAColors.DEFAULT_TEXT_COLOR;
 }
 
 //TODO remove public access
@@ -33,6 +36,18 @@ struct CliCommand
     }
 }
 
+void setCliPromptColor(const ubyte color){
+    cliPromptColor = color;
+}
+
+void setCliErrorColor(const ubyte color){
+    cliErrorColor = color;
+}
+
+void setCliInfoColor(const ubyte color){
+    cliInfoColor = color;
+}
+
 void enableCli()
 {
     isActiveShell = true;
@@ -51,18 +66,18 @@ bool isCliEnabled()
 void printCmd()
 {
     Display.enableCursor;
-    Kstdio.kprint("$>");
+    Kstdio.kprint("$>", cliPromptColor);
 }
 
 private void printHelp()
 {
     Display.disableCursor;
     Kstdio.kprintln;
-    Kstdio.kprintln("Available commands:");
+    Kstdio.kprintln("Available commands:", cliInfoColor);
     foreach (int index, CliCommand cmd; cliCommands)
     {
         string[2] cmdInfo = [cmd.name, cmd.desctiption];
-        Kstdio.kprintfln!string("%s - %s", cmdInfo);
+        Kstdio.kprintfln!string("%s - %s", cmdInfo, cliInfoColor);
     }
 
     printCmd;
@@ -153,5 +168,5 @@ private void parseAndRunCommand(ubyte[] command, ubyte[] args)
 
     Kstdio.kprintln;
     string[1] invalidCommand = [commandStr];
-    Kstdio.kprintfln!string("Not found command: %s", invalidCommand);
+    Kstdio.kprintfln!string("Not found command: %s", invalidCommand, cliErrorColor);
 }

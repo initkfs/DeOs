@@ -4,7 +4,8 @@
 //https://wiki.osdev.org/PS/2_Keyboard
 module os.core.io.keyboard;
 
-private {
+private
+{
 	alias Ports = os.core.io.ports;
 }
 
@@ -14,11 +15,10 @@ private __gshared char[178] scanCodeTable = [
 	'1', '!', '2', '@', '3', '#', '4', '$', '5', '%', '6', '^', '7', '&', '8',
 	'*', '9', '(', '0', ')', '-', '_', '=', '+', '\b', '\b', //backspace
 	'\t', '\t', //tab
-	'q',
-	'Q', 'w', 'W', 'e', 'E', 'r', 'R', 't', 'T', 'y', 'Y', 'u', 'U', 'i', 'I',
-	'o', 'O', 'p', 'P', '[', '{', ']', '}', '\n', '\n', '\?', '\?', //left ctrl
-	'a', 'A',
-	's', 'S', 'd', 'D', 'f', 'F', 'g', 'G', 'h', 'H', 'j', 'J', 'k', 'K',
+	'q', 'Q', 'w', 'W', 'e', 'E', 'r', 'R', 't', 'T', 'y', 'Y', 'u', 'U', 'i',
+	'I', 'o', 'O', 'p', 'P', '[', '{', ']', '}', '\n', '\n', '\?', '\?', //left ctrl
+	'a',
+	'A', 's', 'S', 'd', 'D', 'f', 'F', 'g', 'G', 'h', 'H', 'j', 'J', 'k', 'K',
 	'l', 'L', ';', ':', '\'', '\"', '`', '~', '\?', '\?', //left shift
 	'\\', '|', 'z', 'Z',
 	'x', 'X', 'c', 'C', 'v', 'V', 'b', 'B', 'n', 'N', 'm', 'M', ',', '<',
@@ -26,8 +26,7 @@ private __gshared char[178] scanCodeTable = [
 	'\?', '\?', //keypad * or */PrtScrn
 	'\?', '\?', //left alt
 	' ', ' ', //space bar
-	'\?',
-	'\?', //isCapsLockPress lock
+	'\?', '\?', //isCapsLockPress lock
 	'\?', '\?', //F1
 	'\?', '\?', //F2
 	'\?', '\?', //F3
@@ -57,7 +56,8 @@ private __gshared char[178] scanCodeTable = [
 	'\?', '\?', //F11 or F12. Depends
 	'\?', '\?', //non-US
 	'\?', '\?', //F11
-	'\?', '\?' //F12
+	'\?',
+	'\?' //F12
 ];
 
 public enum SCANCODES
@@ -84,14 +84,18 @@ bool isPressed(const char code) @safe pure
 	return !isReleased(code);
 }
 
+bool isSpecial(immutable(ubyte) code) @safe pure
+{
+	if(code == SCANCODES.LSHIFT || code == SCANCODES.RSHIFT || code == SCANCODES.CAPSLOCK){
+		return true;
+	}
+
+	return false;
+}
+
 ubyte scanKeyCode()
 {
 	immutable ubyte scanCode = Ports.readFromPort!(ubyte)(0x60);
-
-	if (scanCode & 0x80)
-	{
-		return 0;
-	}
 
 	if (isReleased(scanCode))
 	{
@@ -100,7 +104,6 @@ ubyte scanKeyCode()
 		switch (releasedCode)
 		{
 		case SCANCODES.CAPSLOCK:
-			isCapsLockPress = isCapsLockPress ? false : true;
 			break;
 		case SCANCODES.LSHIFT:
 			isShiftPress = false;
@@ -110,8 +113,6 @@ ubyte scanKeyCode()
 			break;
 		default:
 		}
-
-		return 0;
 	}
 	else
 	{
@@ -124,6 +125,7 @@ ubyte scanKeyCode()
 			isShiftPress = true;
 			break;
 		case SCANCODES.CAPSLOCK:
+			isCapsLockPress = !isCapsLockPress;
 			break;
 		default:
 		}
@@ -134,14 +136,13 @@ ubyte scanKeyCode()
 
 char getKeyByCode(immutable(ubyte) scanCode)
 {
-	if (scanCode == 0)
+	if (scanCode == 0 || isSpecial(scanCode) || isReleased(scanCode))
 	{
-		auto releaseKeyChar = '?';
-		return releaseKeyChar;
+		return 0;
 	}
 
-	immutable int charIndex = ((isShiftPress || isCapsLockPress) ? (scanCode * 2) + 1
-			: (scanCode * 2));
+	immutable int charIndex = ((isShiftPress || isCapsLockPress) ? (scanCode * 2) + 1 : (
+			scanCode * 2));
 	immutable(char) resultChar = scanCodeTable[charIndex];
 	return resultChar;
 }

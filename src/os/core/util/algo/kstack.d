@@ -5,15 +5,15 @@ module os.core.util.algo.kstack;
 
 import os.core.util.error_util;
 
-struct KStackSmall
+struct KStackSmall(T)
 {
     private
     {
         int stackPointer = -1;
-        int[100] storage;
+        T[100] storage;
     }
 
-    void push(int value)
+    void push(T value)
     {
         if (stackPointer == storage.length)
         {
@@ -23,7 +23,7 @@ struct KStackSmall
         storage[stackPointer] = value;
     }
 
-    int peek()
+    T peek()
     {
         if (isEmpty)
         {
@@ -32,13 +32,13 @@ struct KStackSmall
         return storage[stackPointer];
     }
 
-    int pop()
+    T pop()
     {
         if (isEmpty)
         {
             error("Stack is empty");
         }
-        int value = peek;
+        T value = peek;
         stackPointer--;
         return value;
     }
@@ -46,6 +46,10 @@ struct KStackSmall
     bool isEmpty()
     {
         return (stackPointer == -1);
+    }
+
+    size_t size(){
+        return stackPointer + 1;
     }
 
 }

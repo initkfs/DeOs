@@ -19,7 +19,7 @@ private
 }
 
 //TODO remove public access
-public __gshared CliCommand[6] cliCommands;
+public __gshared CliCommand[7] cliCommands;
 
 struct CliCommand
 {
@@ -87,9 +87,15 @@ void applyForCli(char k)
 {
     if (k == '\n' && isActiveShell)
     {
+        int commandEndPosition = 0;
         for (int i = 0; i < cliCommandBuffer.length; i++)
         {
-            if (cliCommandBuffer[i] == 0u || cliCommandBuffer[i] == ' ')
+            if(cliCommandBuffer[i] == ' ' && commandEndPosition == 0){
+                commandEndPosition = i;
+                continue;
+            }
+            
+            if (cliCommandBuffer[i] == 0u)
             {
 
                 if (i == 0)
@@ -99,7 +105,8 @@ void applyForCli(char k)
                 }
 
                 Display.disableCursor;
-                parseAndRunCommand(cliCommandBuffer[0 .. i], cliCommandBuffer[i .. $]);
+                commandEndPosition = commandEndPosition == 0 ? i : commandEndPosition;
+                parseAndRunCommand(cliCommandBuffer[0 .. commandEndPosition], cliCommandBuffer[commandEndPosition + 1 .. i]);
                 break;
             }
         }

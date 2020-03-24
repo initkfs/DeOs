@@ -18,6 +18,7 @@ alias Pic = os.core.io.interrupt.pic;
 alias LinearAllocator = os.core.memory.allocators.linear;
 alias Date = os.core.sys.date.stdate;
 alias Cli = os.core.sys.cli;
+alias Calc = os.core.sys.calc;
 alias Exit = os.core.sys.exit;
 alias SimpleGame = os.core.sys.game.simple_game;
 alias UptimeTimer = os.core.timer.uptime_timer;
@@ -26,6 +27,7 @@ alias PauseTimer = os.core.timer.pause_timer;
 alias TestUtil = os.core.util.test_util;
 alias ConversionUtil = os.core.util.conversion_util;
 alias StringUtil = os.core.util.string_util;
+alias MathUtil = os.core.util.math.math_util;
 
 extern (C) __gshared ulong KERNEL_END;
 
@@ -62,12 +64,15 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	Kstdio.kprintln("Testing modules...");
 	TestUtil.runTest!(ConversionUtil);
 	TestUtil.runTest!(StringUtil);
+	TestUtil.runTest!(MathUtil);
+	
+	TestUtil.runTest!(Calc);
 
 	Display.clearScreen;
 
 	const ubyte uiInfoColor = Display.CGAInfoColors.COLOR_INFO;
 	Cli.setCliPromptColor(uiInfoColor);
-	
+
 	Cli.cliCommands[0] = Cli.CliCommand("exit", "Immediate shutdown", &exitNowCommand);
 	Cli.cliCommands[1] = Cli.CliCommand("clear", "Clear screen", &clearScreenCommand);
 	Cli.cliCommands[2] = Cli.CliCommand("date",
@@ -75,6 +80,7 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	Cli.cliCommands[3] = Cli.CliCommand("mem", "Print memory information", &memDebugCommand);
 	Cli.cliCommands[4] = Cli.CliCommand("game", "Run simple game", &runSimpleGameCommand);
 	Cli.cliCommands[5] = Cli.CliCommand("info", "Print hardware information", &infoCommand);
+	Cli.cliCommands[6] = Cli.CliCommand("calc", "Run simple calculator. Without a dynamic array, the calculator accepts number as a character, i.e. < 10.", &calcCommand);
 
 	TextBoxDrawer.drawSimpleBox(osName, uiInfoColor);
 
@@ -151,6 +157,17 @@ private void infoCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) args)
 
 	Kstdio.kprintln;
 	Kstdio.kprintf("Vendor: %s", vendorInfoParts);
+	Kstdio.kprintln;
+}
+
+private void calcCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) args)
+{
+	const long result = Calc.calc(args);
+
+	const long[1] resultParts = [result];
+
+	Kstdio.kprintln;
+	Kstdio.kprintf("%l", resultParts);
 	Kstdio.kprintln;
 }
 

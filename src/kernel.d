@@ -65,7 +65,7 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	TestUtil.runTest!(ConversionUtil);
 	TestUtil.runTest!(StringUtil);
 	TestUtil.runTest!(MathUtil);
-	
+
 	TestUtil.runTest!(Calc);
 
 	Display.clearScreen;
@@ -80,7 +80,10 @@ extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 	Cli.cliCommands[3] = Cli.CliCommand("mem", "Print memory information", &memDebugCommand);
 	Cli.cliCommands[4] = Cli.CliCommand("game", "Run simple game", &runSimpleGameCommand);
 	Cli.cliCommands[5] = Cli.CliCommand("info", "Print hardware information", &infoCommand);
-	Cli.cliCommands[6] = Cli.CliCommand("calc", "Run simple calculator. Without a dynamic array, the calculator accepts number as a character, i.e. < 10.", &calcCommand);
+	Cli.cliCommands[6] = Cli.CliCommand("calc",
+			"Run simple calculator. Without a dynamic array, the calculator accepts number as a character, i.e. < 10.",
+			&calcCommand);
+	Cli.cliCommands[7] = Cli.CliCommand("paint", "Run simple painter", &paintCommand);
 
 	TextBoxDrawer.drawSimpleBox(osName, uiInfoColor);
 
@@ -169,6 +172,26 @@ private void calcCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) args)
 	Kstdio.kprintln;
 	Kstdio.kprintf("%l", resultParts);
 	Kstdio.kprintln;
+}
+
+private void paintCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) args)
+{
+	alias Painter = os.core.sys.paint;
+
+	if (args.length == 0)
+	{
+		return;
+	}
+
+	const char firstArg = args[0];
+	Kstdio.kprintln;
+	switch (firstArg)
+	{
+	case 's':
+		Painter.drawSierpinski(8);
+		break;
+	default:
+	}
 }
 
 extern (C) __gshared void runInterruptServiceRoutine(const ulong num, const ulong err)

@@ -19,6 +19,10 @@ void kprintChar(const char charValue, const ubyte color = 0b111){
     Display.printChar(charValue, color);
 }
 
+void kprintSpace(){
+    kprintChar(' ');
+}
+
 void kprint(const string str, const ubyte color = 0b111)
 {
     Display.printString(str, color);

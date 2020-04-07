@@ -190,6 +190,9 @@ private void paintCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) args)
 	case 's':
 		Painter.drawSierpinski(8);
 		break;
+	case 'c':
+	    Painter.drawCircle(5);
+		break;
 	default:
 	}
 }

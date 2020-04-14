@@ -3,3 +3,4 @@ build/
 .dub/
 iso/
 os.iso
+serial.txt

@@ -158,5 +158,5 @@ fi
 #bochs -qf /dev/null -rc "$__dir/bochs_debug.rc" 'clock: sync=realtime, time0=local' ' display_library: x, options="gui_debug' 'megs: 128' 'boot: c' "ata0-master: type=disk, path=$osFile, mode=flat, cylinders=0, heads=0, spt=0, model=\"Generic 1234\", biosdetect=auto, translation=auto"
 
 #'display_library: x, options = "gui_debug"'
-bochs -qf /dev/null 'cpuid: x86_64=1' 'clock: sync=realtime, time0=local' 'display_library: x' 'megs: 256' 'boot: c' "ata0-master: type=disk, path=$osFile, mode=flat, cylinders=0, heads=0, spt=0, model=\"Generic 1234\", biosdetect=auto, translation=auto"
+bochs -qf /dev/null 'cpuid: x86_64=1' 'clock: sync=realtime, time0=local' 'com1: enabled=1, mode=file, dev=serial.txt' 'display_library: x' 'megs: 256' 'boot: c' "ata0-master: type=disk, path=$osFile, mode=flat, cylinders=0, heads=0, spt=0, model=\"Generic 1234\", biosdetect=auto, translation=auto"
 #qemu-system-x86_64 -d int,cpu_reset,guest_errors -s -m 128M -cdrom $osFile -monitor stdio

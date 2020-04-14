@@ -11,6 +11,7 @@ alias TextBoxDrawer = os.core.graphic.text_box_drawer;
 alias Kstdio = os.core.io.kstdio;
 alias Keyboard = os.core.io.keyboard;
 alias Ports = os.core.io.ports;
+alias Serial = os.core.io.serial;
 alias Idt = os.core.io.interrupt.idt;
 alias Isr = os.core.io.interrupt.isr;
 alias Irq = os.core.io.interrupt.irq;
@@ -43,6 +44,10 @@ private __gshared bool isGame = false;
 
 extern (C) void kmain(uint magic, size_t* multibootInfoAddress)
 {
+	Serial.SerialPort serialPort = Serial.SerialPort(Serial.SerialPorts.COM1);
+	serialPort.initPort;
+	serialPort.writeString("Kernel started");
+
 	Display.disableCursor;
 
 	immutable ubyte* memoryStart = cast(immutable(ubyte*))&KERNEL_END;
@@ -191,7 +196,7 @@ private void paintCommand(immutable(Cli.CliCommand) cmd, immutable(char[]) args)
 		Painter.drawSierpinski(8);
 		break;
 	case 'c':
-	    Painter.drawCircle(5);
+		Painter.drawCircle(5);
 		break;
 	default:
 	}

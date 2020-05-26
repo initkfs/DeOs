@@ -23,7 +23,6 @@ buildDir=$scriptDir/build
 osImageDir=$scriptDir/iso
 
 if [[ -e $buildDir ]]; then
-	#gvfs-trash
 	gio trash -f "$buildDir"
 	if [[ $? -ne 0 ]]; then
 		echo "Error. Cannot remove build directory: $buildDir">&2
@@ -82,14 +81,13 @@ fi
 asmSources=$(find "$sourceAsmDir" -type f -name "*.asm")
 while read -r asmSourceFile;
 do
-#dmd -betterC -c -m64 -boundscheck=off -release "$dSourceFile" -od=$buildDir
-fullName=${asmSourceFile##*/}
-fileName="${fullName%.*}"
-nasm -f elf64 -g -o "$buildDir/${fileName}.o" "$asmSourceFile"
-if [[ $? -ne 0 ]]; then
-	echo "NASM error" >&2
-	exit 1
-fi
+	fullName=${asmSourceFile##*/}
+	fileName="${fullName%.*}"
+	nasm -f elf64 -g -o "$buildDir/${fileName}.o" "$asmSourceFile"
+	if [[ $? -ne 0 ]]; then
+		echo "NASM error" >&2
+		exit 1
+	fi
 done <<EOF
 $asmSources
 EOF
@@ -97,20 +95,7 @@ EOF
 popd
 
 #dmd -betterC -map -vtls -m64 -i=app.core.main_controller  -boundscheck=off -release -c $sourceDir/kernel.d -of=$buildDir/kernel.o
-#-boundscheck=off
-# $sourceDir/**/*.d
-#dSources=$(find "$sourceDir" -type f -name "*.d")
-#while read -r dSourceFile;
-#do
-#dmd -betterC -c -m64 -boundscheck=off -release "$dSourceFile" -od=$buildDir
 #ldc2 -nogc -g -betterC -boundscheck=off -c -od="$buildDir" "$dSourceFile"
-#if [[ $? -ne 0 ]]; then
-#	echo "Compiler error" >&2
-#	exit 1
-#fi
-#done <<EOF
-#$dSources
-#EOF
 dub build
 if [[ $? -ne 0 ]]; then
 	echo "Dub build error" >&2
@@ -119,7 +104,7 @@ fi
 
 kernelPath=$osImageBootFiles/kernel.bin
 
-ld -n -o -T $scriptDir/linker.ld -o "$kernelPath" "$buildDir"/*.o*
+ld -n -o -T "${scriptDir}/linker.ld" -o "$kernelPath" "$buildDir"/*.o*
 if [[ $? -ne 0 ]]; then
 	echo "Linker error" >&2
 	exit 1
